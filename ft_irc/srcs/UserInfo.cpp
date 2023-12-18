@@ -75,5 +75,17 @@ void UserInfo::setServerName(std::string serverName) {
 UserInfo::UserInfo() : nickName(""), userName(""), hostName(""), serverName(""), realName(""), pass(false), s(false), nick(false), user(false), active(false) {}
 
 std::ostream &operator<<(std::ostream &os, const UserInfo &obj) {
-    
+    os << "!!!!!USERINFO!!!!!" << std::endl;
+
+    os << "fd : " << obj.getFd() << std::endl;
+    os << "nickname : " << obj.getNickName() << std::endl;
+	os << "username : " << obj.getUserName() << std::endl;
+	os << "hostname : " << obj.getHostName() << std::endl;
+	os << "servername : " << obj.getServerName() << std::endl;
+	os << "realname : " << obj.getRealName() << std::endl
+	   << std::endl;
+	os << "end!!!!!!!!!" << std::endl;
+
+	return os;
+
 }
