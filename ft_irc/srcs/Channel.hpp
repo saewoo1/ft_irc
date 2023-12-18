@@ -31,7 +31,6 @@ class Channel {
         bool getLimitMode() const;
         bool getTopicMode() const;
 
-        // setter
         void setKey(std::string);
         void setTopic(std::string);
         void setLimit(size_t);

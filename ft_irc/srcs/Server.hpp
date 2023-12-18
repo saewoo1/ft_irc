@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <cctype>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <stdlib.h>
@@ -17,6 +18,7 @@
 #include <csignal>
 #include "UserInfo.hpp"
 #include "Channel.hpp"
+// #include "Command.hpp"
 
 
 class Server
@@ -29,14 +31,16 @@ private:
 
     int convertPort(char *strPortNumber);
     void openServer();
+    void createSocket();
     void setServerAddress(struct sockaddr_in &serveraddr, int portNumber);
     void pushServerPollfd();
 
 public:
+    // cliend socket fd, userInfo
     std::map<int, UserInfo> users;
     std::map<std::string, Channel> channels;
-    char clientBuffer[SOMAXCONN][BUFSIZE];
-    char sendBuffer[SOMAXCONN][BUFSIZE];
+    char clientBuffer[SOMAXCONN][BUFSIZ];
+    char sendBuffer[SOMAXCONN][BUFSIZ];
     std:vector<pollfd> pollfds;
 
     Server(int ac, char **av);
