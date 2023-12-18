@@ -73,3 +73,45 @@ void Channel::increaseUserCount() {
 void Channel::decreaseUserCount() {
     this->userCount = static_cast<size_t>(static_cast<int>(this->userCount) - 1);
 }
+
+void Channel::setInviteMode(bool mode) {
+    inviteMode = mode;
+}
+
+void Channel::setKeyMode(bool mode) {
+    keyMode = mode;
+}
+
+void Channel::setLimitMode(bool mode) {
+    limitMode = mode;
+}
+
+void Channel::setTopicMode(bool mode) {
+    topicMode = mode;
+}
+
+void Channel::switchInviteMode() {
+    if (inviteMode)
+        inviteMode = false;
+    else
+        inviteMode = true;
+}
+
+void Channel::switchTopicMode() {
+    if (topicMode)
+        topicMode = false;
+    else
+        topicMode = true;
+}
+
+bool Channel::isOperator(std::string nickName) {
+    std::map<std::string, UserInfo>::iterator it = operators.find(nickName);
+    if (it == operators.end()) {
+        return false;
+    }
+    return true;
+}
+
+std::ostream &operator<<(std::ostream &os, Channel &obj) {
+    os << "CHANNEL INFORMATION" << std::endl;
+}

@@ -41,8 +41,8 @@ class Channel {
         void setLimitMode(bool);
         void setTopicMode(bool);
 
-        void changeInviteMode();
-        void changeTopicMode();
+        void switchInviteMode();
+        void switchTopicMode();
         void increaseUserCount();
         void decreaseUserCount();
 
