@@ -60,3 +60,73 @@ void Server::setServerAddress(struct sockaddr_in &serverAddr, int port) {
     serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
     serverAddr.sin_port = htons(port);
 }
+
+void Server::pushServerPollfd() {
+    pollfd pollfd;
+    pollfd.fd = getSocketFd();
+    pollfd.events = POLLIN;
+    pollfds.push_back(pollfd);
+}
+
+std::string Server::getPassword() const {
+	return password;
+}
+
+int Server::getPortNumber() const {
+	return portNumber;
+}
+
+int Server::getSocketFd() const {
+	return socketFd;
+}
+
+std::string Server::getServerName() const {
+	return serverName;
+}
+
+void Server::setPassword(std::string password) {
+	this->password = password;
+}
+
+void Server::setPortNumber(int portNum) {
+	this->portNumber = portNum;
+}
+
+void Server::setSocketFd(int fd) {
+	this->socketFd = fd;
+}
+
+void Server::acceptClient() {
+    sockaddr_in client;
+    socklen_t clientlen = sizeof(client);
+
+    int clientFd = accept(getSocketFd(), reinterpret_cast<sockaddr *>(&client), &clientlen);
+
+    users.insert(std::make_pair(clientFd, UserInfo()));
+    users[clientFd].setFd(clientFd);
+
+    pollfd newPollfd;
+    newPollfd.fd = clientFd;
+    newPollfd.events = POLLIN;
+    pollfds.push_back(newPollfd);
+
+    std::cout << "new client fd: " << clientFd << std::endl;
+}
+
+void Server::executeCommand(Command *cmd, UserInfo &info) {
+    if (cmd) {
+        cmd->execute();
+
+    }
+}
+
+UserInfo &Server::getUserInfoByFd(int clientFd) {
+    std::map<int, UserInfo>::iterator it = users.find(clientFd);
+
+    if (it != users.end()) {
+        return it->second;
+    } else {
+        throw std::runtime_error("Error: Not find any user");
+    }
+    return it->second;
+}
