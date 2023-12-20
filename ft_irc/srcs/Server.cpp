@@ -71,6 +71,7 @@ void Server::openServer() {
          * listen(int socketfd, int backlog)
          * 연결 요청 대기상태에 두고자하는 소켓의 fd
          * backlog : 연결요청 대기 큐의 크기 정보. SOMAXCONN은 최대길이. 128
+         * 성공 시 이제 이 server의 sockfd값은 일반 소켓이 아니라 서버 소켓. 이벤트가 발생하길 기다리고 있다.
         */
         if (listen(getSocketFd(), SOMAXCONN) == -1) {
             throw std::runtime_error("Error: listen error");
@@ -136,17 +137,31 @@ void Server::acceptClient() {
     sockaddr_in client;
     socklen_t clientlen = sizeof(client);
 
-    int clientFd = accept(getSocketFd(), reinterpret_cast<sockaddr *>(&client), &clientlen);
+    /**
+     * getSockFd -> 서버 소켓의 fd값 받아오기.
+     * 
+     * accept(int socketFd, clientAddr, clientAddrSize)
+     * 접속 요청 수락, 요청 마무리하기 전까지(요청이 들어오기 전까지) 계속 대기상태
+     * 성공 시 연결된 소켓이 만들어진다.
+     * clientAddr : accept 할 클라이언트측 주소정보 구조체 주소
+    */
+    int clientSocketFd = accept(getSocketFd(), reinterpret_cast<sockaddr *>(&client), &clientlen);
 
-    users.insert(std::make_pair(clientFd, UserInfo()));
-    users[clientFd].setFd(clientFd);
+    // Map<Integer, UserInfo> users
+    /**
+     * 연결된 소켓, 유저 정보 key-value
+     * 
+    */
+    users.insert(std::make_pair(clientSocketFd, UserInfo()));
+    //UserInfo 객체 내부에 clientSocketFd 저장
+    users[clientSocketFd].setFd(clientSocketFd);
 
     pollfd newPollfd;
-    newPollfd.fd = clientFd;
+    newPollfd.fd = clientSocketFd;
     newPollfd.events = POLLIN;
     pollfds.push_back(newPollfd);
 
-    std::cout << "new client fd: " << clientFd << std::endl;
+    std::cout << "new client fd: " << clientSocketFd << std::endl;
 }
 
 void Server::executeCommand(Command *cmd, UserInfo &info) {
@@ -156,8 +171,8 @@ void Server::executeCommand(Command *cmd, UserInfo &info) {
     }
 }
 
-UserInfo &Server::getUserInfoByFd(int clientFd) {
-    std::map<int, UserInfo>::iterator it = users.find(clientFd);
+UserInfo &Server::getUserInfoByFd(int clientSocketFd) {
+    std::map<int, UserInfo>::iterator it = users.find(clientSocketFd);
 
     if (it != users.end()) {
         return it->second;
