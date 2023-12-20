@@ -28,7 +28,7 @@ private:
     int socketFd;
     std::string serverName;
 
-    int convertPort(char *strPortNumber);
+    int convertPortNumber(char *strPortNumber);
     void openServer();
     void setServerAddress(struct sockaddr_in &serveraddr, int portNumber);
     void pushServerPollfd();
