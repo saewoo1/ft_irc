@@ -12,14 +12,14 @@ Channel::Channel(UserInfo &user, std::string name) : key(""), topic(""), limit(-
 }
 
 
-std::string Channel::getName() const{
+std::string Channel::getName() const {
 	return name;
 }
 std::string Channel::getKey() const
 {
 	return key;
 }
-std::string Channel::getTopic() const{
+std::string Channel::getTopic() const {
 	return topic;
 }
 long long Channel::getLimit() const
