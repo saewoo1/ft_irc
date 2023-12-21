@@ -1,5 +1,5 @@
 #include "Server.hpp"
-
+std::vector<std::string> splitByCRLF(std::string &input);
 int main(int ac, char **av) {
     try {
         /**
@@ -22,15 +22,19 @@ int main(int ac, char **av) {
                     continue;
                 }
 
-                for (int i = 1; i < server.pollfds.size(); i++) {
+                for (size_t i = 1; i < server.pollfds.size(); i++) {
                     if (server.pollfds[i].revents == 0) {
-                        continue; // 이벤트 없음
+                        std::cout << "읽을 이벤트 없다" << std::endl;
+                        continue; // 읽을 이벤트 없음
                     }
-                    if (server.pollfds[i].revents && POLLHUP || server.pollfds[i].revents && POLLERR) {
-                        quiteServer(server, i);
+                    // 이벤트가 존재하지만 끝났거나, 에러가 발생한 케이스라면 서버를 종료합니다.
+                    if (server.pollfds[i].revents & POLLHUP || server.pollfds[i].revents & POLLERR) {
+                        // quiteServer(server, i);
                         std::cout << "quit client\n";
-                    } else if (server.pollfds[i].revents && POLLIN) {
-                        int fd = server.pollfds[i].fd;
+                        exit(0); // 임시 종료
+                    } else if (server.pollfds[i].revents & POLLIN) {
+                        std::cout << "이벤트가 존재하고, 데이터도 있네" << std::endl;
+                        int fd = server.pollfds[i].fd; // 해당 이벤트를 읽어온다.
                         char buffer[512];
 
                         memset(buffer, 0, sizeof(buffer));
@@ -41,6 +45,7 @@ int main(int ac, char **av) {
                         } else {
                             std::strcat(server.clientBuffer[fd], buffer);
                             std::string recvStr(server.clientBuffer[fd]);
+                            std::cout << "recvByte > 0" << std::endl;
 
                             // crlf("\r\n")이 아닐 경우, 문자열만 저장해준다
                             if (recvStr.find("\r\n") == std::string::npos) {
@@ -54,15 +59,16 @@ int main(int ac, char **av) {
                             if (lastCRLFPos != std::string::npos) {
                                 strBuffer.erase(0, lastCRLFPos + 2);
                             }
-                            for (int i = 0; i < commands.size(); i++) {
+                            for (size_t i = 0; i < commands.size(); i++) {
                                 std::cout << "보낸 사람의 fd : " << fd << std::endl;
                                 std::cout << "입력한 메세지 : " << commands[i] << std::endl;
                                 
                                 try {
                                     UserInfo &info = server.getUserInfoByFd(fd);
-                                    Command *cmd = server.createCommand(info, commands[i]);
+                                    // Command *cmd = server.createCommand(info, commands[i]);
 
-                                    server.executeCommand(cmd, info);
+                                    // server.executeCommand(cmd, info);
+                                    std::cout << "in ..." << std::endl;
                                 } catch (const std::exception &e) {
                                     std::cerr << e.what() << std::endl;
                                     continue;
@@ -81,21 +87,40 @@ int main(int ac, char **av) {
 
 std::vector<std::string> splitByCRLF(std::string &input) {
     std::vector<std::string> res;
-    int start = 0;
-    int foundIdx = input.find("\r\n");
+    size_t start = 0;
+    size_t foundIdx = input.find("\r\n");
 
     while (foundIdx != std::string::npos) {
         res.push_back(input.substr(start, foundIdx - start));
         start = foundIdx + 2;
         foundIdx = input.find("\r\n", start);
     }
+    return res;
 }
 
-void quiteServer(Server &server, int i) {
-    UserInfo &info = server.getUserInfoByFd(server.pollfds[i].fd);
-    std::map<std::string, bool>::iterator it = info.channels.begin();
+// 서버를 종료하는 과정. 채널, 유저 모두 지워야한다.
+// void quiteServer(Server &server, int i) {
+//     UserInfo &info = server.getUserInfoByFd(server.pollfds[i].fd);
+//     std::map<std::string, bool>::iterator it = info.channels.begin();
 
-    for (; it != info.channels.end(); it++) {
+//     for (; it != info.channels.end(); it++) {
+//         std::string channelName = it->first;
+//         std::map<std::string, Channel>::iterator channerIt = server.channels.find(channelName);
 
-    }
-}
+//         // 유저 삭제
+//         Channel &channel = channerIt->second;
+//         channel.users.erase(info.getNick());
+//         channel.operators.erase(info.getNick());
+//         channel.invite.erase(info.getNick());
+
+//         std::map<std::string, UserInfo>::iterator userIt = channel.users.begin();
+//         for (; userIt != channel.users.end(); userIt++) {
+//             UserInfo &userInChatRoom = userIt->second;
+
+//             if (userInChatRoom.getFd() == info.getFd()) {
+//                 continue;
+//             }
+//             std::string bye = ":" + info.getNick();
+//         }
+//     }
+// }

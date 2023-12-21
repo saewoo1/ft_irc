@@ -17,7 +17,7 @@
 #include <csignal>
 #include "UserInfo.hpp"
 #include "Channel.hpp"
-#include "Command.hpp"
+#include "../command/Command.hpp"
 
 
 class Server

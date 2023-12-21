@@ -19,7 +19,7 @@ Server::Server(int ac, char **av) : serverName("saewoo") {
 }
 
 int Server::convertPortNumber(char *portNumber) {
-    for (int i = 0; i < strlen(portNumber); i++) {
+    for (size_t i = 0; i < strlen(portNumber); i++) {
         if (!isdigit(portNumber[i])) {
             throw std::invalid_argument("Error: 포트 번호는 숫자만 입력해주세요.");
         }
@@ -156,6 +156,22 @@ void Server::acceptClient() {
     //UserInfo 객체 내부에 clientSocketFd 저장
     users[clientSocketFd].setFd(clientSocketFd);
 
+    /**
+     * 구조체 내부 멤버들로는
+     * int fd, short events, short revents
+     * newPollfd 선언, fd, events 값 세팅
+     * 클라이언트 소켓을 모니터링하며, POLLIN(읽을 수 있는 이벤트들) 수행하도록 구조체를 초기화하고,
+     * 이를 Server 클래스의 멤버인 pollfds 에 추가했슴
+     * POLLIN?
+     *  지정된 fd에서 데이터를 읽을 수 있는 이벤트를 나타내는 상수.
+     *  pollfd 객체에서 clientfd를 모니터링하며, 읽을 수 있는 이벤트들을 받아들인다.
+     *  poll 반환 시, revents 멤버를 확인하여 각 fd에서 어떤 이벤트가 발생했는지 확인할 수 있게 된다.
+     *  revents에 POLLIN이 포함되어 있다면, 해당 소켓에서 읽을 준비가 된 데이터가 존재한다는 의미.
+     *  if (pollfds.revents && POLLIN) 요런 상태.
+     * 
+     * 서버에서 동시에 여러가지의 소켓의 활동을 기다리고, 서버가 여러 클라이언트를 효율적으로 처리할 수 있도록
+     * non-blocking 방식으로 수행
+    */
     pollfd newPollfd;
     newPollfd.fd = clientSocketFd;
     newPollfd.events = POLLIN;
@@ -164,10 +180,52 @@ void Server::acceptClient() {
     std::cout << "new client fd: " << clientSocketFd << std::endl;
 }
 
+// Command *Server::createCommand(UserInfo &user, std::string recvStr) {
+//     Message msg(user.getFd(), recvStr);
+//     Command *cmd = 0;
+
+//     	if (msg.getCommand() == "PASS")
+// 		cmd = new Pass(&msg, user, password);
+//         else if (msg.getCommand() == "NICK")
+//             cmd = new Nick(&msg, user, users);
+//         else if (msg.getCommand() == "USER")
+//             cmd = new User(&msg, user);
+//         else if (msg.getCommand() == "JOIN")
+//             cmd = new Join(&msg, user, &this->channels);
+//         else if (msg.getCommand() == "INVITE")
+//             cmd = new Invite(&msg, user, &this->channels, &this->users);
+//         else if (msg.getCommand() == "TOPIC")
+//             cmd = new Topic(&msg, user, this->channels);
+//         else if (msg.getCommand() == "QUIT")
+//             cmd = new Quit(&msg, user, &this->channels, &this->users, &this->pollfds);
+//         else if (msg.getCommand() == "PRIVMSG")
+//             cmd = new Privmsg(&msg, user, this->users, this->channels);
+//         else if (msg.getCommand() == "MODE")
+//             cmd = new Mode(&msg, user, channels, users);
+//         else if (msg.getCommand() == "PING")
+//             cmd = new Ping(&msg, user);
+//         else if (msg.getCommand() == "KICK")
+//             cmd = new Kick(&msg, user, &this->users, &this->channels);
+//         else if (msg.getCommand() == "PART")
+//             cmd = new Part(&msg, user, &this->users, &this->channels);
+//         else if (msg.getCommand() == "DINNER")
+//             cmd = new Bot(&msg, user);
+//         return cmd;
+// }
+
 void Server::executeCommand(Command *cmd, UserInfo &info) {
     if (cmd) {
         cmd->execute();
 
+        // if (!info.getActive() && (cmd->getCommand() == "NICK" || cmd->getCommand() == "USER")) {
+            //NICK, USER일 경우 
+        // }
+
+        if (!info.getActive()) {
+            std::cout << "hi" << std::endl;
+        }
+
+        delete(cmd);
     }
 }
 
