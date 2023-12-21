@@ -180,49 +180,27 @@ void Server::acceptClient() {
     std::cout << "new client fd: " << clientSocketFd << std::endl;
 }
 
-// Command *Server::createCommand(UserInfo &user, std::string recvStr) {
-//     Message msg(user.getFd(), recvStr);
-//     Command *cmd = 0;
+Command *Server::createCommand(UserInfo &user, std::string recvStr) {
+    Message msg(user.getFd(), recvStr);
+    Command *cmd = 0;
 
-//     	if (msg.getCommand() == "PASS")
-// 		cmd = new Pass(&msg, user, password);
-//         else if (msg.getCommand() == "NICK")
-//             cmd = new Nick(&msg, user, users);
-//         else if (msg.getCommand() == "USER")
-//             cmd = new User(&msg, user);
-//         else if (msg.getCommand() == "JOIN")
-//             cmd = new Join(&msg, user, &this->channels);
-//         else if (msg.getCommand() == "INVITE")
-//             cmd = new Invite(&msg, user, &this->channels, &this->users);
-//         else if (msg.getCommand() == "TOPIC")
-//             cmd = new Topic(&msg, user, this->channels);
-//         else if (msg.getCommand() == "QUIT")
-//             cmd = new Quit(&msg, user, &this->channels, &this->users, &this->pollfds);
-//         else if (msg.getCommand() == "PRIVMSG")
-//             cmd = new Privmsg(&msg, user, this->users, this->channels);
-//         else if (msg.getCommand() == "MODE")
-//             cmd = new Mode(&msg, user, channels, users);
-//         else if (msg.getCommand() == "PING")
-//             cmd = new Ping(&msg, user);
-//         else if (msg.getCommand() == "KICK")
-//             cmd = new Kick(&msg, user, &this->users, &this->channels);
-//         else if (msg.getCommand() == "PART")
-//             cmd = new Part(&msg, user, &this->users, &this->channels);
-//         else if (msg.getCommand() == "DINNER")
-//             cmd = new Bot(&msg, user);
-//         return cmd;
-// }
+    	if (msg.getCmd() == "PASS")
+		    cmd = new Pass(&msg, user, password);
+        else if (msg.getCmd() == "NICK")
+            cmd = new Nick(&msg, user, users);
+        else if (msg.getCmd() == "USER")
+            cmd = new User(&msg, user);
+       
+        return cmd;
+}
 
 void Server::executeCommand(Command *cmd, UserInfo &info) {
     if (cmd) {
         cmd->execute();
 
-        // if (!info.getActive() && (cmd->getCommand() == "NICK" || cmd->getCommand() == "USER")) {
-            //NICK, USER일 경우 
-        // }
-
-        if (!info.getActive()) {
-            std::cout << "hi" << std::endl;
+        // Active -> 로그인 성공!
+        if (!info.getActive() && (cmd->getCmd() == "NICK" || cmd->getCmd() == "USER")) {
+            // NICK, USER일 경우
         }
 
         delete(cmd);
