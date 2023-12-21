@@ -10,11 +10,6 @@ Pass::~Pass()
 
 void Pass::execute()
 {
-    std::cout << "in Pass execute..." << std::endl;
-    std::cout << "password is... " << password << std::endl;
-    std::cout << "params at 0: " << getParameters().at(0) << std::endl;
-    std::cout << "clear" << std::endl;
-
     if (getParameters().size() < 1) {
 
         std::string warning = "461 PASS :Not enough parameters";

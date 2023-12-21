@@ -7,12 +7,12 @@
 # include <map>
 
 class Nick : public Command {
-    private :
+    private:
             UserInfo user;
             std::map<int, UserInfo> infoOfUser;
 
-            int checkForm();
-    public  :
+            bool checkForm();
+    public:
             Nick(Message *msg, UserInfo &userInfo, std::map<int, UserInfo> &infoOfUser);
             ~Nick();
 
