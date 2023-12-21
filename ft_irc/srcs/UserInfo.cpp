@@ -72,7 +72,11 @@ void UserInfo::checkUser()
 
 void UserInfo::checkActive()
 {
-	active = active==false? true : false;
+	active = !active;
+}
+
+void UserInfo::setActive(bool res) {
+    active = res;
 }
 
 void UserInfo::setUserName(std::string userName) {

@@ -12,8 +12,8 @@ bool Nick::checkForm()
     return true;
 }
 
-Nick::Nick(Message *msg, UserInfo &userInfo, std::map<int, UserInfo> &infoOfUser) : Command(msg), user(userInfo), infoOfUser(infoOfUser)
-{
+Nick::Nick(Message *msg, UserInfo &userInfo, std::map<int, UserInfo> &infoOfUser) : Command(msg), user(userInfo), allUserInfo(infoOfUser) {
+
 }
 
 Nick::~Nick()
@@ -22,14 +22,18 @@ Nick::~Nick()
 
 void Nick::execute()
 {
+    checkDuplicateNickName();
+    // 활성화 되어있거나, PASSWORD 충족 못하면?
     if (user.getActive() || !user.getPass()) {
+//        close(user.getFd());
         return ;
     }
 
+    // 닉네임을 입력하지 않은 경우
     if (getParameters().size() < 1) {
         std::string warning = "431 :No nickname given";
         Communicate::sendToClient(user.getFd(), warning);
-        close(user.getFd());
+//        close(user.getFd());
     }
 
     if (checkForm()) {
@@ -38,4 +42,16 @@ void Nick::execute()
         user.setNickName(getParameters()[0]);
         std::cout << "set nickName compeleted";
     }
+}
+
+void Nick::checkDuplicateNickName() {
+    std::map<int, UserInfo>::iterator it;
+    for (it = allUserInfo.begin(); it != allUserInfo.end(); it++) {
+        if (it->second.getNickName() == user.getNickName() && it->second.getActive()) {
+            std::string errMsg = ":" + user.getNickName() + " is Duplicate...";
+            Communicate::sendToClient(user.getFd(), errMsg);
+            close(user.getFd());
+        }
+    }
+
 }

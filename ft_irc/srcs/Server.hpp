@@ -16,14 +16,14 @@
 #include <set>
 #include <csignal>
 #include "UserInfo.hpp"
+#include "Login.hpp"
 #include "../command/Command.hpp"
 #include "../command/Pass.hpp"
 #include "../command/Nick.hpp"
 #include "../command/User.hpp"
 #include "Channel.hpp"
 
-class Server
-{
+class Server {
 private:
     int portNumber;
     std::string password;

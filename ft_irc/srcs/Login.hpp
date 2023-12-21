@@ -15,6 +15,7 @@ class Login {
 		std::string serverName;
 		bool isEmpty();
 		bool isDuplicateNick();
+        bool isValidUserInfo();
 	public:
 		Login(UserInfo &userInfo, std::map<int, UserInfo> &allUsers, std::string serverName);
 };

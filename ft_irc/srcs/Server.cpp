@@ -1,4 +1,5 @@
 #include "Server.hpp"
+#include "Channel.hpp"
 
 /**
  * 포트 번호, 비밀번호로 실행 시작
@@ -201,7 +202,7 @@ void Server::executeCommand(Command *cmd, UserInfo &info) {
 
         // Active -> 로그인 성공!
         if (!info.getActive() && (cmd->getCmd() == "NICK" || cmd->getCmd() == "USER")) {
-            // NICK, USER일 경우
+            Login(info, users, getServerName());
         }
 
         delete(cmd);
