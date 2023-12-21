@@ -8,11 +8,10 @@
 class Command {
 	private	:
 			int	fd;
-			std::string origin;
-			std::vector<std::string> params;
-			std::string trailing;
-			std::string msg;
+			std::string originalMsg;
 			std::string cmd;
+			std::vector<std::string> parameters;
+			std::string trailing;
 
 	public	:
 			// fd와 메세지를 받아야한다
@@ -23,10 +22,13 @@ class Command {
 
 			//getter
 			int			getFd() const;
-			std::string	getMsg() const;
+			std::string	getOriginalMsg() const;
 			std::string	getCmd() const;
-
+			std::vector<std::string> getParameters() const;
+			std::string getTrailing() const;
 			//setter
 			void		setCmd(std::string &cmd);
+			void		setParameters(std::string &parameter);
+			void		setTrailing(std::string &trailing);
 };
 #endif
