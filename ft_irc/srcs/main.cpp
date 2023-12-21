@@ -25,7 +25,7 @@ int main(int ac, char **av) {
                 for (size_t i = 1; i < server.pollfds.size(); i++) {
                     if (server.pollfds[i].revents == 0) {
                         std::cout << "읽을 이벤트 없다" << std::endl;
-                        continue; // 읽을 이벤트 없음
+                        continue;
                     }
                     // 이벤트가 존재하지만 끝났거나, 에러가 발생한 케이스라면 서버를 종료합니다.
                     if (server.pollfds[i].revents & POLLHUP || server.pollfds[i].revents & POLLERR) {
@@ -45,7 +45,8 @@ int main(int ac, char **av) {
                         } else {
                             std::strcat(server.clientBuffer[fd], buffer);
                             std::string recvStr(server.clientBuffer[fd]);
-                            std::cout << "recvByte > 0" << std::endl;
+                            // 클라이언트에서 보낸 문자열 일단 출력..
+                            std::cout << recvStr << std::endl;
 
                             // crlf("\r\n")이 아닐 경우, 문자열만 저장해준다
                             if (recvStr.find("\r\n") == std::string::npos) {
