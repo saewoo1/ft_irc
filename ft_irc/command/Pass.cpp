@@ -16,33 +16,36 @@ void Pass::execute()
     std::cout << "clear" << std::endl;
 
     if (getParameters().size() < 1) {
-        std::cout << "size is less then 1" << std::endl;
 
         std::string warning = "461 PASS :Not enough parameters";
-        sendMsg(user.getFd(), warning);
-        return ;
+        sedMsgToClient(user.getFd(), warning);
+        close(user.getFd());
     }
 
     if (user.getActive()) {
-        std::cout << "user is Active" << std::endl;
 
         std::string warning = "462 :You may not reregister";
-        sendMsg(user.getFd(), warning);
+        sedMsgToClient(user.getFd(), warning);
+        close(user.getFd());
+
         return ;
     }
 
     if (getParameters().at(0) == password) {
+        // 유저의 로그인 성공 표시 on, 서버 측에만 패스워드 맞았다고 출력
         user.checkPass();
-        std::string result = "password complete";
-        sendMsg(user.getFd(), result);
+        std::cout << user.getFd() <<" password complete" << std::endl;
+        
     } else {
         std::string warning = "464 :Password incorrect";
-        sendMsg(user.getFd(), warning);
+        sedMsgToClient(user.getFd(), warning);
+        close(user.getFd());
+
         return ;
     }
 }
 
-void sendMsg(int fd, std::string str)
+void sedMsgToClient(int fd, std::string str)
 {
     str += "\r\n";
 	const char *reply = str.c_str();

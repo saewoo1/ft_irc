@@ -15,5 +15,5 @@ class Pass : public Command {
             void execute();
 };
 
-void sendMsg(int fd, std::string str);
+void sedMsgToClient(int fd, std::string str);
 #endif
