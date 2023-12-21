@@ -3,6 +3,7 @@
 
 # include "Command.hpp"
 # include "UserInfo.hpp"
+# include "Communicate.hpp"
 # include <map>
 
 class Nick : public Command {
@@ -12,7 +13,7 @@ class Nick : public Command {
 
             int checkForm();
     public  :
-            Nick(UserInfo &userInfo, std::map<int, UserInfo> &infoOfUser);
+            Nick(Message *msg, UserInfo &userInfo, std::map<int, UserInfo> &infoOfUser);
             ~Nick();
 
             void execute();

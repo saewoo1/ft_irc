@@ -6,13 +6,13 @@ int Nick::checkForm()
         std::string warning = "432 " + getParameters().at(0) + " :Error nickname";
 
         //에러 메세지 user의 fd값으로 보내는 함수 작성하기
-        //sendWarnning(user.getFd(), warning); 
+        Communicate::sendWarnning(user.getFd(), warning);
         return 1;
     }
     return 0;
 }
 
-Nick::Nick(UserInfo &userInfo, std::map<int, UserInfo> &infoOfUser) : user(userInfo), infoOfUser(infoOfUser)
+Nick::Nick(Message *msg, UserInfo &userInfo, std::map<int, UserInfo> &infoOfUser) : Command(msg), user(userInfo), infoOfUser(infoOfUser)
 {
 }
 
@@ -28,7 +28,7 @@ void Nick::execute()
 
     if (getParameters().size() < 1) {
         std::string warning = "431 :No nickname given";
-        //sendWarnning(user.getFd(), warning); 
+        Communicate::sendWarnning(user.getFd(), warning);
     }
 
     if (!checkForm()) {

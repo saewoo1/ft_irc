@@ -1,6 +1,6 @@
 #include "User.hpp"
 
-User::User(UserInfo &userInfo) : user(userInfo)
+User::User(Message *msg, UserInfo &userInfo) : Command(msg), user(userInfo)
 {
 }
 
@@ -18,7 +18,7 @@ void User::execute()
         std::string warning = "462 USER :You may not reregister";
 
         //에러 메세지 user의 fd값으로 보내는 함수 작성하기
-        //sendWarnning(user.getFd(), warning); 
+        Communicate::sendWarnning(user.getFd(), warning);
         return;
     }
 
@@ -26,7 +26,7 @@ void User::execute()
         std::string warning = "461 USER :You may not reregister";
 
         //에러 메세지 user의 fd값으로 보내는 함수 작성하기
-        //sendWarnning(user.getFd(), warning); 
+        Communicate::sendWarnning(user.getFd(), warning);
         return;
     }
 

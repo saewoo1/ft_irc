@@ -3,13 +3,14 @@
 
 # include "Command.hpp"
 # include "UserInfo.hpp"
+# include "Communicate.hpp"
 
 class User : public Command {
     private :
             UserInfo user;
 
     public  :
-            User(UserInfo &userInfo);
+            User(Message *msg, UserInfo &userInfo);
             ~User();
 
             void execute();

@@ -1,6 +1,6 @@
 #include "Pass.hpp"
 
-Pass::Pass(UserInfo &userInfo, std::string &password) : user(userInfo), password(password)
+Pass::Pass(Message *msg, UserInfo &userInfo, std::string &password) : Command(msg), user(userInfo), password(password)
 {
 }
 
@@ -12,13 +12,13 @@ void Pass::execute()
 {
     if (getParameters().size() < 1) {
         std::string warning = "461 PASS :Not enough parameters";
-        //sendWarnning(user.getFd(), warning);
+        Communicate::sendWarnning(user.getFd(), warning);
         return ;
     }
 
     if (user.getActive()) {
         std::string warning = "462 :You may not reregister";
-        //sendWarnning(user.getFd(), warning);
+        Communicate::sendWarnning(user.getFd(), warning);
         return ;
     }
 
@@ -27,7 +27,7 @@ void Pass::execute()
         std::cout << "password completed" << std::endl;
     } else {
         std::string warning = "464 :Password incorrect";
-        //sendWarnning(user.getFd(), warning);
+        Communicate::sendWarnning(user.getFd(), warning);
         return ;
     }
 }
