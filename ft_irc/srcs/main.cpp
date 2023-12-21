@@ -45,8 +45,6 @@ int main(int ac, char **av) {
                         } else {
                             std::strcat(server.clientBuffer[fd], buffer);
                             std::string recvStr(server.clientBuffer[fd]);
-                            // 클라이언트에서 보낸 문자열 일단 출력..
-                            std::cout << recvStr << std::endl;
 
                             // crlf("\r\n")이 아닐 경우, 문자열만 저장해준다
                             if (recvStr.find("\r\n") == std::string::npos) {
@@ -66,9 +64,11 @@ int main(int ac, char **av) {
                                 
                                 try {
                                     UserInfo &info = server.getUserInfoByFd(fd);
-                                    // Command *cmd = server.createCommand(info, commands[i]);
+                                    // 유저의 정보, 커맨드를 갖고 cmd를 따온다
+                                    Command *cmd = server.createCommand(info, commands[i]);
 
-                                    // server.executeCommand(cmd, info);
+                                    // cmd 수행하기
+                                    server.executeCommand(cmd, info);
                                     std::cout << "in ..." << std::endl;
                                 } catch (const std::exception &e) {
                                     std::cerr << e.what() << std::endl;
@@ -86,6 +86,13 @@ int main(int ac, char **av) {
     }
 }
 
+/**
+ * 왜 하필 CRLF?
+ * CR(Carriage Return) \r
+ * LF(Line Feed) \n
+ * 텍스트 파일, 네트워크 프로토콜(예: HTTP 및 SMTP) 및 텍스트 서식 지정 및 줄 바꿈
+ * irssi 규칙을 따라서 개행 및 줄바꿈을 인지
+*/
 std::vector<std::string> splitByCRLF(std::string &input) {
     std::vector<std::string> res;
     size_t start = 0;
