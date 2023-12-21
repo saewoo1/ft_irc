@@ -201,7 +201,7 @@ void Server::executeCommand(Command *cmd, UserInfo &info) {
         cmd->execute();
 
         // Active -> 로그인 성공!
-        if (!info.getActive() && (cmd->getCmd() == "NICK" || cmd->getCmd() == "USER")) {
+        if (cmd->getCmd() == "NICK" || cmd->getCmd() == "USER") {
             Login(info, users, getServerName());
         }
 

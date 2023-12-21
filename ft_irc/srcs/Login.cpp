@@ -10,9 +10,11 @@
  * @return
  */
 bool Login::isValidUserInfo() {
-	// USER -> userName(필수) hostname serverName :realName
-	if (userInfo.getHostName().empty()
-	|| userInfo.getRealName().empty() || userInfo.getServerName().empty()) {
+	// USER -> userName(필수) : trailing
+    // NICK -> nickname
+    std::cout << "nickName : " <<userInfo.getNickName() << std::endl;
+    std::cout << "userName : " <<userInfo.getUserName() << std::endl;
+	if (userInfo.getNickName().empty() || userInfo.getUserName().empty()) {
 		return false;
 	}
 	return true;
@@ -20,10 +22,8 @@ bool Login::isValidUserInfo() {
 
 Login::Login(UserInfo &userInfo, std::map<int, UserInfo> &allUsers, std::string serverName) : userInfo(userInfo), allUsers(allUsers), serverName(serverName) {
 	if (isValidUserInfo()) {
-        userInfo.setActive(true);
+        userInfo.setActive(true); // 유저 등록
 		Communicate::sendToClient(userInfo.getFd(), "접속성공");
         return;
 	}
-    close(userInfo.getFd());
-	throw std::runtime_error("접속 불가");
 }

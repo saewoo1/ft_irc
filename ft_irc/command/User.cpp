@@ -15,6 +15,7 @@ void User::execute()
     }
 
     if (user.getActive()) {
+        // 이미 등록된 user일 경우
         std::string warning = "462 USER :You may not reregister";
 
         //에러 메세지 user의 fd값으로 보내는 함수 작성하기
@@ -22,6 +23,7 @@ void User::execute()
         return;
     }
 
+    // 필수 정보를 모두 입력하지 않았거나, :trailing이 비어있을 경우.
     if (getParameters().size() < 3 || getTrailing().empty()) {
         std::string warning = "461 USER :You may not reregister";
 
@@ -30,6 +32,7 @@ void User::execute()
         return;
     }
 
+    // 지정된 타입은 USER username hostname servername :realname
     std::vector<std::string> parameters = getParameters();
     user.setUserName(parameters[0]);
     user.setHostName(parameters[1]);
@@ -37,4 +40,5 @@ void User::execute()
     user.setRealName(getTrailing());
 
     user.checkUser();
+    Communicate::sendToClient(user.getFd(), "user applied");
  }

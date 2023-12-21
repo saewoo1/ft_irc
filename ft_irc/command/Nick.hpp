@@ -8,7 +8,7 @@
 
 class Nick : public Command {
     private:
-            UserInfo user;
+            UserInfo &user;
             std::map<int, UserInfo> allUserInfo;
 
             bool checkForm();

@@ -38,7 +38,7 @@ void Nick::execute()
 
     if (checkForm()) {
         //switch nick Status
-        user.checkNick();
+        user.setNick(true);
         user.setNickName(getParameters()[0]);
         std::cout << "set nickName compeleted";
     }

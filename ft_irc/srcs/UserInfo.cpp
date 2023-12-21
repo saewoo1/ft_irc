@@ -48,9 +48,9 @@ bool UserInfo::getActive() const
     return active;
 }
 
-void UserInfo::checkNick()
+void UserInfo::setNick(bool res)
 {
-    nick = nick == false ? true : false;
+    nick = res;
 }
 
 void UserInfo::checkPass() {

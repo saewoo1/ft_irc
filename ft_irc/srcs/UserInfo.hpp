@@ -46,7 +46,7 @@ class UserInfo {
         bool getActive() const;
 
         void checkPass();
-        void checkNick();
+        void setNick(bool res);
         void checkUser();
         void checkActive();
         void setActive(bool res);
