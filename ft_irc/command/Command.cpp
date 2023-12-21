@@ -1,6 +1,14 @@
 #include "Command.hpp"
 
-Command::Command()
+Command::Command(Message *msg) {
+    fd = msg->getFd();
+    origin = msg->getOrigin();
+    cmd = msg->getCmd();
+    params = msg->getParams();
+    trailing = msg->getTrailing();
+}
+
+Command::~Command()
 {
 }
 

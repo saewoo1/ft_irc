@@ -72,7 +72,7 @@ void UserInfo::setServerName(std::string serverName) {
     this->serverName = serverName;
 }
 
-UserInfo::UserInfo() : nickName(""), userName(""), hostName(""), serverName(""), realName(""), pass(false), s(false), nick(false), user(false), active(false) {}
+UserInfo::UserInfo() : nickName(""), userName(""), hostName(""), serverName(""), realName(""), pass(false), nick(false), user(false), active(false) {}
 
 std::ostream &operator<<(std::ostream &os, const UserInfo &obj) {
     os << "!!!!!USERINFO!!!!!" << std::endl;

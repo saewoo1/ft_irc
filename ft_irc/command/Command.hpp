@@ -1,6 +1,7 @@
 #ifndef COMMAND_HPP
 # define COMMAND_HPP
 
+#include "../srcs/Message.hpp"
 #include <vector>
 #include <string>
 
@@ -15,6 +16,7 @@ class Command {
 	public	:
 			// fd와 메세지를 받아야한다
 			Command();
+			Command(Message *msg);
 			virtual ~Command();
 			virtual void execute() = 0;
 
