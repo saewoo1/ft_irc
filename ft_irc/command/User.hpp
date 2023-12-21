@@ -2,7 +2,7 @@
 # define USER_HPP
 
 # include "Command.hpp"
-# include "UserInfo.hpp"
+# include "../srcs/UserInfo.hpp"
 # include "Communicate.hpp"
 
 class User : public Command {

@@ -182,6 +182,7 @@ void Server::acceptClient() {
 
 Command *Server::createCommand(UserInfo &user, std::string recvStr) {
     Message msg(user.getFd(), recvStr);
+    std::cout << msg.getOrigin() << std::endl;
     Command *cmd = 0;
 
     	if (msg.getCmd() == "PASS")

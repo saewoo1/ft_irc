@@ -17,6 +17,9 @@
 #include <csignal>
 #include "UserInfo.hpp"
 #include "../command/Command.hpp"
+#include "../command/Pass.hpp"
+#include "../command/Nick.hpp"
+#include "../command/User.hpp"
 #include "Channel.hpp"
 
 class Server

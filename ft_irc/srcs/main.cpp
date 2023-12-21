@@ -66,10 +66,10 @@ int main(int ac, char **av) {
                                     UserInfo &info = server.getUserInfoByFd(fd);
                                     // 유저의 정보, 커맨드를 갖고 cmd를 따온다
                                     Command *cmd = server.createCommand(info, commands[i]);
+                                    
 
                                     // cmd 수행하기
                                     server.executeCommand(cmd, info);
-                                    std::cout << "in ..." << std::endl;
                                 } catch (const std::exception &e) {
                                     std::cerr << e.what() << std::endl;
                                     continue;

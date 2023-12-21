@@ -2,7 +2,7 @@
 # define NICK_HPP
 
 # include "Command.hpp"
-# include "UserInfo.hpp"
+# include "../srcs/UserInfo.hpp"
 # include "Communicate.hpp"
 # include <map>
 

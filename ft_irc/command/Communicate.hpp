@@ -1,7 +1,7 @@
 #ifndef COMMUNICATE_HPP
 # define COMMUNICATE_HPP
 
-# include "Server.hpp"
+# include "../srcs/Server.hpp"
 # include <vector>
 # include <string>
 class Communicate {

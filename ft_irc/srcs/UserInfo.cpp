@@ -48,12 +48,31 @@ bool UserInfo::getActive() const
     return active;
 }
 
+void UserInfo::checkNick()
+{
+    nick = nick == false ? true : false;
+}
+
+void UserInfo::checkPass() {
+    pass = true;
+}
+
 void UserInfo::setFd(int fd) {
     this->fd = fd;
 }
 
 void UserInfo::setNickName(std::string nickName) {
     this->nickName = nickName;
+}
+
+void UserInfo::checkUser()
+{
+	user = true;
+};
+
+void UserInfo::checkActive()
+{
+	active = active==false? true : false;
 }
 
 void UserInfo::setUserName(std::string userName) {

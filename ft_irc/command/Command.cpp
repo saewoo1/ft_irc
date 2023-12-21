@@ -12,10 +12,6 @@ Command::~Command()
 {
 }
 
-Command::~Command()
-{
-}
-
 int Command::getFd() const
 {
     return this->fd;
