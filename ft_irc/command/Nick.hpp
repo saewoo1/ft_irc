@@ -7,12 +7,14 @@
 # include <map>
 
 class Nick : public Command {
-    private :
-            UserInfo user;
-            std::map<int, UserInfo> infoOfUser;
+    private:
+            UserInfo &user;
+            std::map<int, UserInfo> allUserInfo;
+            std::string password;
 
-            int checkForm();
-    public  :
+            bool checkForm();
+            void checkDuplicateNickName();
+    public:
             Nick(Message *msg, UserInfo &userInfo, std::map<int, UserInfo> &infoOfUser);
             ~Nick();
 

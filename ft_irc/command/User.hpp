@@ -6,13 +6,12 @@
 # include "Communicate.hpp"
 
 class User : public Command {
-    private :
-            UserInfo user;
+    private:
+        UserInfo &user;
 
-    public  :
-            User(Message *msg, UserInfo &userInfo);
-            ~User();
-
-            void execute();
+    public:
+        User(Message *msg, UserInfo &userInfo);
+        ~User();
+        void execute();
 };
 #endif

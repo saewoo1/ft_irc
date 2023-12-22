@@ -6,6 +6,6 @@
 # include <string>
 class Communicate {
     public  :
-            static void sendWarnning(int clientFd, std::string warning);
+            static void sendToClient(int clientFd, std::string warning);
 };
 #endif

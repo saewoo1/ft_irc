@@ -8,12 +8,12 @@
 class Pass : public Command {
     private :
             UserInfo &user;
-            std::string password;  
+            std::string password;
     public  :
             Pass(Message *msg, UserInfo &userInfo, std::string &password);
             ~Pass();
             void execute();
 };
 
-void sendMsg(int fd, std::string str);
+void sedMsgToClient(int fd, std::string str);
 #endif

@@ -1,4 +1,5 @@
 #include "Server.hpp"
+#include "Channel.hpp"
 
 /**
  * 포트 번호, 비밀번호로 실행 시작
@@ -185,6 +186,7 @@ Command *Server::createCommand(UserInfo &user, std::string recvStr) {
     std::cout << msg.getOrigin() << std::endl;
     Command *cmd = 0;
 
+        // PASS 세팅을 최우선으로 할 것인가?
     	if (msg.getCmd() == "PASS")
 		    cmd = new Pass(&msg, user, password);
         else if (msg.getCmd() == "NICK")
@@ -200,8 +202,8 @@ void Server::executeCommand(Command *cmd, UserInfo &info) {
         cmd->execute();
 
         // Active -> 로그인 성공!
-        if (!info.getActive() && (cmd->getCmd() == "NICK" || cmd->getCmd() == "USER")) {
-            // NICK, USER일 경우
+        if (cmd->getCmd() == "NICK" || cmd->getCmd() == "USER") {
+            Login(info, users, getServerName());
         }
 
         delete(cmd);

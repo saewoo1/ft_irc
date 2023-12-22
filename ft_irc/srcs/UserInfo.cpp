@@ -48,9 +48,9 @@ bool UserInfo::getActive() const
     return active;
 }
 
-void UserInfo::checkNick()
+void UserInfo::setNick(bool res)
 {
-    nick = nick == false ? true : false;
+    nick = res;
 }
 
 void UserInfo::checkPass() {
@@ -72,7 +72,11 @@ void UserInfo::checkUser()
 
 void UserInfo::checkActive()
 {
-	active = active==false? true : false;
+	active = !active;
+}
+
+void UserInfo::setActive(bool res) {
+    active = res;
 }
 
 void UserInfo::setUserName(std::string userName) {

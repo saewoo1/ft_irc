@@ -1,7 +1,9 @@
 #ifndef CHANNEL_HPP
 #define CHANNEL_HPP
 
-#include "Server.hpp"
+#include <string>
+#include <map>
+#include "UserInfo.hpp"
 
 class Channel {
     private:

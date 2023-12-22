@@ -32,6 +32,7 @@ class UserInfo {
         void setRealName(std::string realName);
         void setServerName(std::string serverName);
 
+
         int getFd() const;
         std::string getNickName() const;
         std::string getUserName() const;
@@ -45,9 +46,10 @@ class UserInfo {
         bool getActive() const;
 
         void checkPass();
-        void checkNick();
+        void setNick(bool res);
         void checkUser();
         void checkActive();
+        void setActive(bool res);
         
 };
 
