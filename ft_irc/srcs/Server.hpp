@@ -21,7 +21,7 @@
 #include "../command/Pass.hpp"
 #include "../command/Nick.hpp"
 #include "../command/User.hpp"
-#include "../command/PriavetMessage.hpp"
+#include "../command/PrivateMessage.hpp"
 #include "../command/Join.hpp"
 #include "Channel.hpp"
 
