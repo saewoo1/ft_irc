@@ -10,7 +10,8 @@ SRCS = ./srcs/main.cpp \
 		./command/Communicate.cpp \
 		./command/Nick.cpp \
 		./command/Pass.cpp \
-		./command/User.cpp
+		./command/User.cpp \
+		./command/Join.cpp
 
 RM = rm -rf
 

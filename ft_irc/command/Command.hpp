@@ -12,7 +12,7 @@ class Command {
 			std::string cmd;
 			std::vector<std::string> parameters;
 			std::string trailing;
-
+			
 	public	:
 			// fd와 메세지를 받아야한다
 			Command(Message *msg);

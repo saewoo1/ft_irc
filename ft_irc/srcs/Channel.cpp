@@ -61,7 +61,7 @@ void Channel::setLimit(size_t limit)
 }
 
 void Channel::setUserCount(int count) {
-    this->userCount = count;
+    this->userCount = static_cast<size_t>(static_cast<int>(this->userCount + count));
 }
 
 void Channel::setInviteMode(bool mode)
@@ -149,4 +149,6 @@ std::ostream &operator<<(std::ostream &os, Channel &obj)
 	for (std::map<std::string, UserInfo>::iterator it = obj.operators.begin(); it != obj.operators.end(); it++) {
 		os << "🖐" + it->first << std::endl;
 	}
+
+	return os;
 }
