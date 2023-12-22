@@ -31,8 +31,7 @@ bool PrivateMessage::validateChannelMsg() {
     std::map<std::string, Channel>::iterator it = allChannels.find(channelName);
 
     // 채널이 존재하고, 해당 채널 내부에 유저 수가 1명 이상이라면 true를 반환한다.
-    //(it->second.getUserCount() != 0) 얘 때문인가? 일단 보류
-    return (it != allChannels.end());
+    return (it != allChannels.end()) && (it->second.getUserCount() != 0);
 }
 
 void PrivateMessage::sendChannelMsg() {
@@ -40,17 +39,10 @@ void PrivateMessage::sendChannelMsg() {
     std::map<std::string, Channel>::iterator it = allChannels.find(channelName);
 
     Channel channel = it->second; // 해당 채널을 찾아온다.
-    std::map<std::string, UserInfo>::iterator test = channel.users.begin();
-    for (; test != channel.users.end(); test++) {
-        std::cout << "채널 내의 모든 유저의 이름은 ? : " << test->first << std::endl;
-    }
-
-
-
     std::map<std::string, UserInfo> usersInChannel = channel.users; // 채널 내의 모든 유저들을 찾아온다.
     std::map<std::string, UserInfo>::iterator userIt = usersInChannel.begin();
     for (; userIt != usersInChannel.end(); userIt++) {
-        Communicate::sendToClient(userIt->second.getFd(), getTrailing()); // 모든 유저들에게 메세지를 전송한다.
+        Communicate::sendToClient(userIt->second.getFd(), generateSendFormat()); // 모든 유저들에게 메세지를 전송한다.
     }
 }
 
@@ -72,7 +64,6 @@ void PrivateMessage::execute() {
      */
 
      // 모든 유저중에 닉네임 값을 가지고 순회 -> 일치하는 UserInfo를 찾아야 한다.
-     std::cout << getParameters().at(0) << std::endl;
      if (getReceiverFd() == -1) {
          Communicate::sendToClient(user.getFd(), "없는 닉네임한테 귓속말 금지");
          return;
@@ -101,6 +92,8 @@ std::string PrivateMessage::generateSendFormat() {
 
 // 발신자의 포멧 점검
 // 1. 닉네임, trailing이 비어있으면 안된다.
+// 닉네임 -> PRVMSG receiverName :message
+// 채널 -> 1. PRIVMSG #channelName :message
 bool PrivateMessage::validateFormat() {
     if (getParameters().size() != 1 || getTrailing().empty()) {
         return false;
