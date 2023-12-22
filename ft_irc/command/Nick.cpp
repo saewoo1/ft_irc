@@ -2,6 +2,7 @@
 
 bool Nick::checkForm()
 {
+    // 중복 검사, 닉네임 체인지 기능 추가해야됨 ㅠㅠ
     if (getParameters()[0].size() >= 10) {
         std::string warning = "432 " + getParameters().at(0) + " :Error nickname";
 
