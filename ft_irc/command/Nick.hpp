@@ -10,6 +10,7 @@ class Nick : public Command {
     private:
             UserInfo &user;
             std::map<int, UserInfo> allUserInfo;
+            std::string password;
 
             bool checkForm();
             void checkDuplicateNickName();

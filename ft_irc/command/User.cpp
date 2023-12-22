@@ -11,6 +11,7 @@ User::~User()
 void User::execute()
 {
     if (user.getActive() || !user.getPass()) {
+        Communicate::sendToClient(user.getFd(), "이미 등록된 유저이거나, 패스워드를 입력하기 전에 NICK 명령어 사용");
         return ;
     }
 

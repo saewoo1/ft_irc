@@ -8,7 +8,7 @@
 class Pass : public Command {
     private :
             UserInfo &user;
-            std::string password;  
+            std::string password;
     public  :
             Pass(Message *msg, UserInfo &userInfo, std::string &password);
             ~Pass();

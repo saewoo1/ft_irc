@@ -25,7 +25,7 @@ void Nick::execute()
     checkDuplicateNickName();
     // 활성화 되어있거나, PASSWORD 충족 못하면?
     if (user.getActive() || !user.getPass()) {
-//        close(user.getFd());
+        Communicate::sendToClient(user.getFd(), "이미 등록된 유저이거나, 패스워드를 입력하기 전에 NICK 명령어 사용");
         return ;
     }
 

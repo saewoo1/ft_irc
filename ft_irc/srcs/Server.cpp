@@ -186,6 +186,7 @@ Command *Server::createCommand(UserInfo &user, std::string recvStr) {
     std::cout << msg.getOrigin() << std::endl;
     Command *cmd = 0;
 
+        // PASS 세팅을 최우선으로 할 것인가?
     	if (msg.getCmd() == "PASS")
 		    cmd = new Pass(&msg, user, password);
         else if (msg.getCmd() == "NICK")
