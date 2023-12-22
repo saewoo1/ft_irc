@@ -1,5 +1,5 @@
 #include "Login.hpp"
-#include "Communicate.hpp"
+#include "../command/Communicate.hpp"
 
 /**
  * 1. USER를 입력한다
