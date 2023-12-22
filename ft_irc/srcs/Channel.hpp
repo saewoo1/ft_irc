@@ -8,9 +8,13 @@
 class Channel {
     private:
         std::string name;
+        //join 명령어를 사용할 때, 채널 추가하고 그 유저가 채널에 들어감 -> 그떄 사용하는 key
         std::string key;
+        //바꿀 이름
         std::string topic;
+        //최대 인원수
         long long limit;
+        //현재 채널에 있는 유저 갯수
         size_t userCount;
 
         bool inviteMode;
@@ -37,7 +41,7 @@ class Channel {
         void setKey(std::string);
         void setTopic(std::string);
         void setLimit(size_t);
-        void setUserCount(int count);
+        void setUserCount(int);
         void setInviteMode(bool);
         void setKeyMode(bool);
         void setLimitMode(bool);
