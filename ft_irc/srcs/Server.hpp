@@ -21,6 +21,7 @@
 #include "../command/Pass.hpp"
 #include "../command/Nick.hpp"
 #include "../command/User.hpp"
+#include "../command/PriavetMessage.hpp"
 #include "Channel.hpp"
 
 class Server {

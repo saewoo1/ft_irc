@@ -193,6 +193,9 @@ Command *Server::createCommand(UserInfo &user, std::string recvStr) {
             cmd = new Nick(&msg, user, users);
         else if (msg.getCmd() == "USER")
             cmd = new User(&msg, user);
+        else if (msg.getCmd() == "PRIVMSG") {
+            cmd = new PrivateMessage(&msg, user, users);
+        }
        
         return cmd;
 }
