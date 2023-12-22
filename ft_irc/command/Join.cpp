@@ -26,13 +26,6 @@ int Join::validateJoinExecute(const std::string &channelName, const std::string 
         createNewChannel(channelName);
     } else {
 		// std::cout << "있는 채널이니?" << std::endl;
-		std::map<std::string, bool>::iterator userIter = this->user.channels.find(channelName);
-
-		if (userIter != user.channels.end()) {
-			std::string msg = ":" + this->user.getServerName() + " 443 " + this->user.getNickName() + " " + channelName + " :is already on channel\n";
-			Communicate::sendToClient(this->user.getFd(), msg);
-			return 1;
-		}
         joinChannel(channelName, password);
     }
 	return 0;
@@ -70,6 +63,8 @@ void Join::joinChannel(std::string channelName, const std::string &password)
 
 	std::map<std::string, bool>::iterator userIter = this->user.channels.find(channelName);
 	if (userIter != this->user.channels.end()) {
+		std::string msg = ":" + this->user.getServerName() + " 443 " + this->user.getNickName() + " " + channelName + " :is already on channel\n";
+		Communicate::sendToClient(this->user.getFd(), msg);
 		return ;
 	}
 

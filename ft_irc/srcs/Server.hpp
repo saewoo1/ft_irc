@@ -22,6 +22,7 @@
 #include "../command/Nick.hpp"
 #include "../command/User.hpp"
 #include "../command/Join.hpp"
+#include "../command/Part.hpp"
 #include "Channel.hpp"
 
 class Server {

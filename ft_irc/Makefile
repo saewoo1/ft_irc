@@ -11,7 +11,8 @@ SRCS = ./srcs/main.cpp \
 		./command/Nick.cpp \
 		./command/Pass.cpp \
 		./command/User.cpp \
-		./command/Join.cpp
+		./command/Join.cpp \
+		./command/Part.cpp
 
 RM = rm -rf
 

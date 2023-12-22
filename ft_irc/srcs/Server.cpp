@@ -195,7 +195,8 @@ Command *Server::createCommand(UserInfo &user, std::string recvStr) {
             cmd = new User(&msg, user);
         else if (msg.getCmd() == "JOIN")
             cmd = new Join(&msg, user, channels);
-
+        else if (msg.getCmd() == "PART")
+            cmd = new Part(&msg, user, users, channels);
         return cmd;
 }
 
