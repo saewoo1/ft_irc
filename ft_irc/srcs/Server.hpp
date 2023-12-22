@@ -60,6 +60,7 @@ public:
     void acceptClient();
     Command *createCommand(UserInfo &user, std::string recvStr);
     void executeCommand(Command *cmd, UserInfo &user);
+    void quitServer(int i);
 
     UserInfo &getUserInfoByFd(int userFd);
 };
