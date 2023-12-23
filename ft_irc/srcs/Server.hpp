@@ -23,6 +23,7 @@
 #include "../command/User.hpp"
 #include "../command/PrivateMessage.hpp"
 #include "../command/Join.hpp"
+#include "../command/Ping.hpp"
 #include "Channel.hpp"
 
 class Server {
