@@ -13,7 +13,7 @@ class Nick : public Command {
             std::string password;
 
             bool checkForm();
-            void checkDuplicateNickName();
+            bool isDuplicateNickName();
     public:
             Nick(Message *msg, UserInfo &userInfo, std::map<int, UserInfo> &infoOfUser);
             ~Nick();

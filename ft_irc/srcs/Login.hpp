@@ -2,6 +2,7 @@
 #define LOGIN_HPP
 
 #include "UserInfo.hpp"
+#include <sstream>
 #include <string>
 #include <vector>
 #include <sys/socket.h>
@@ -16,6 +17,7 @@ class Login {
 		bool isEmpty();
 		bool isDuplicateNick();
         bool isValidUserInfo();
+		void generateLoginPage();
 	public:
 		Login(UserInfo &userInfo, std::map<int, UserInfo> &allUsers, std::string serverName);
 };
