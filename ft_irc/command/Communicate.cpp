@@ -11,3 +11,14 @@ void Communicate::sendToClient(int clientFd, std::string warning)
         throw new std::runtime_error("Error: send failed");
     }
 }
+
+void Communicate::generateWarnMessage(UserInfo user, std::string errCode, std::string cmd, std::string param, std::string warnMessage) {
+    std::string result = ":" + user.getServerName() + " " + errCode + " " + user.getNickName() + " :" + cmd + " :" + param + " :" + warnMessage;
+    sendToClient(user.getFd(), result);
+}
+
+/**
+ *  NICK ajfj
+    :10.31.4.5 433 ajfj :NICK :Nickname is already in use
+ *  에러메세지 정형화 시키기 
+*/

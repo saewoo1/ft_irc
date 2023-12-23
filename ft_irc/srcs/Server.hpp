@@ -21,10 +21,12 @@
 #include "../command/Pass.hpp"
 #include "../command/Nick.hpp"
 #include "../command/User.hpp"
+#include "../command/PrivateMessage.hpp"
 #include "../command/Join.hpp"
 #include "../command/Part.hpp"
 #include "../command/Invite.hpp"
 #include "../command/Kick.hpp"
+#include "../command/Topic.hpp"
 #include "Channel.hpp"
 
 class Server {
@@ -62,6 +64,7 @@ public:
     void acceptClient();
     Command *createCommand(UserInfo &user, std::string recvStr);
     void executeCommand(Command *cmd, UserInfo &user);
+    void quitServer(int i);
 
     UserInfo &getUserInfoByFd(int userFd);
 };

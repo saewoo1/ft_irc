@@ -1,4 +1,5 @@
 #include "Server.hpp"
+
 std::vector<std::string> splitByCRLF(std::string &input);
 int main(int ac, char **av) {
     try {
@@ -27,12 +28,12 @@ int main(int ac, char **av) {
                         std::cout << "읽을 이벤트 없다" << std::endl;
                         continue;
                     }
-                    // 이벤트가 존재하지만 끝났거나, 에러가 발생한 케이스라면 서버를 종료합니다.
+                    // 이벤트가 존재하지만 끝났거나, 에러가 발생한 케이스라면 해당 클라이언트만 서버로부터 접속을 종료합니다.
                     if (server.pollfds[i].revents & POLLHUP || server.pollfds[i].revents & POLLERR) {
-                        // quiteServer(server, i);
-                        std::cout << "quit client\n";
-                        exit(0); // 임시 종료
-                    } else if (server.pollfds[i].revents & POLLIN) {
+                        server.quitServer(i);
+                        std::cout << "bye~" << std::endl;
+                    } 
+                    else if (server.pollfds[i].revents & POLLIN) {
                         std::cout << "이벤트가 존재하고, 데이터도 있네" << std::endl;
                         int fd = server.pollfds[i].fd; // 해당 이벤트를 읽어온다.
                         char buffer[512];
@@ -42,12 +43,14 @@ int main(int ac, char **av) {
 
                         if (recvByte < 0) {
                             throw std::runtime_error("Error: Fail read");
-                        } else {
+                        } 
+                        else {
                             std::strcat(server.clientBuffer[fd], buffer);
                             std::string recvStr(server.clientBuffer[fd]);
 
                             // crlf("\r\n")이 아닐 경우, 문자열만 저장해준다
                             if (recvStr.find("\r\n") == std::string::npos) {
+                                std::cout << "어디갔노.." << recvStr << std::endl;
                                 continue;
                             }
 
@@ -105,30 +108,3 @@ std::vector<std::string> splitByCRLF(std::string &input) {
     }
     return res;
 }
-
-// 서버를 종료하는 과정. 채널, 유저 모두 지워야한다.
-// void quiteServer(Server &server, int i) {
-//     UserInfo &info = server.getUserInfoByFd(server.pollfds[i].fd);
-//     std::map<std::string, bool>::iterator it = info.channels.begin();
-
-//     for (; it != info.channels.end(); it++) {
-//         std::string channelName = it->first;
-//         std::map<std::string, Channel>::iterator channerIt = server.channels.find(channelName);
-
-//         // 유저 삭제
-//         Channel &channel = channerIt->second;
-//         channel.users.erase(info.getNick());
-//         channel.operators.erase(info.getNick());
-//         channel.invite.erase(info.getNick());
-
-//         std::map<std::string, UserInfo>::iterator userIt = channel.users.begin();
-//         for (; userIt != channel.users.end(); userIt++) {
-//             UserInfo &userInChatRoom = userIt->second;
-
-//             if (userInChatRoom.getFd() == info.getFd()) {
-//                 continue;
-//             }
-//             std::string bye = ":" + info.getNick();
-//         }
-//     }
-// }

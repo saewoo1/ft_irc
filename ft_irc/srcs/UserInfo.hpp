@@ -34,6 +34,7 @@ class UserInfo {
 
 
         int getFd() const;
+        int getFdByName(std::string nickName);
         std::string getNickName() const;
         std::string getUserName() const;
         std::string getHostName() const;

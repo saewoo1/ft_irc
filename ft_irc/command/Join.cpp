@@ -6,7 +6,6 @@ Join::Join(Message *msg, UserInfo &user, std::map<std::string, Channel> &channel
 
 int Join::validateJoinExecute(const std::string &channelName, const std::string &password)
 {
-	// (void)password;
     if (this->user.channels.size() >= 10) {
         std::string waring = ":" + this->user.getHostName() + "405" + this->user.getNickName() + " " + channelName + \
                                 " : You have so many Channels! you're so mean";
@@ -15,6 +14,7 @@ int Join::validateJoinExecute(const std::string &channelName, const std::string 
     }
     std::map<std::string, Channel>::iterator it = channelList.find(channelName);
 
+	// 찾지 못했다면?
     if (it == channelList.end()) {
         if (channelName[0] != '#') {
 			std::string msg = ":" + this->user.getServerName() + " 403 " + this->user.getNickName() + " :JOIN :" + channelName + \

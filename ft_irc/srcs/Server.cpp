@@ -193,6 +193,8 @@ Command *Server::createCommand(UserInfo &user, std::string recvStr) {
             cmd = new Nick(&msg, user, users);
         else if (msg.getCmd() == "USER")
             cmd = new User(&msg, user);
+        else if (msg.getCmd() == "PRIVMSG")
+            cmd = new PrivateMessage(&msg, user, users, channels);
         else if (msg.getCmd() == "JOIN")
             cmd = new Join(&msg, user, channels);
         else if (msg.getCmd() == "PART")
@@ -201,6 +203,10 @@ Command *Server::createCommand(UserInfo &user, std::string recvStr) {
             cmd = new Invite(&msg, user, channels, users);
         else if (msg.getCmd() == "KICK")
             cmd = new Kick(&msg, user, users, channels);
+        else if (msg.getCmd() == "TOPIC") {
+            cmd = new Topic(&msg, user, channels);
+        }
+
         return cmd;
 }
 
@@ -226,4 +232,36 @@ UserInfo &Server::getUserInfoByFd(int clientSocketFd) {
         throw std::runtime_error("Error: Not find any user");
     }
     return it->second;
+}
+
+
+void Server::quitServer(int i) {
+    UserInfo &info = getUserInfoByFd(pollfds[i].fd);
+    std::map<std::string, bool>::iterator it = info.channels.begin(); // 모든 채널들
+
+    for (; it != info.channels.end(); it++) {
+        std::string channelName = it->first;
+        // 서버 내에 존재하는 채널명 하나 따오기.
+        std::map<std::string, Channel>::iterator channerIt = channels.find(channelName);
+
+        // 유저 삭제
+        Channel &channel = channerIt->second;
+        channel.users.erase(info.getNickName());
+        channel.operators.erase(info.getNickName());
+        channel.invite.erase(info.getNickName());
+
+        std::map<std::string, UserInfo>::iterator userIt = channel.users.begin();
+        for (; userIt != channel.users.end(); userIt++) {
+            UserInfo &userInChatRoom = userIt->second;
+
+            if (userInChatRoom.getFd() == info.getFd()) {
+                continue;
+            }
+            std::string bye = ":" + info.getNickName() + "!" + info.getUserName() + "@" + info.getServerName() + " QUIT :Quit: leaving";
+            Communicate::sendToClient(userInChatRoom.getFd(), bye);
+        }
+    }
+    users.erase(info.getFd());
+    close(info.getFd());
+    pollfds.erase(pollfds.begin() + i);
 }
