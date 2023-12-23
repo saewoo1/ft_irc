@@ -197,6 +197,9 @@ Command *Server::createCommand(UserInfo &user, std::string recvStr) {
             cmd = new PrivateMessage(&msg, user, users, channels);
         else if (msg.getCmd() == "JOIN")
             cmd = new Join(&msg, user, channels);
+        else if (msg.getCmd() == "TOPIC") {
+            cmd = new Topic(&msg, user, channels);
+        }
 
         return cmd;
 }

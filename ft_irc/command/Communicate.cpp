@@ -12,9 +12,9 @@ void Communicate::sendToClient(int clientFd, std::string warning)
     }
 }
 
-std::string Communicate::generateWarnMessage(UserInfo user, std::string errCode, std::string cmd, std::string param, std::string warnMessage) {
-    std::string result = ":" + user.getServerName() + " " + user.getNickName() + " :" + cmd + " :" + param + " :" + warnMessage;
-    sendToClient(user.getFd(), result); 
+void Communicate::generateWarnMessage(UserInfo user, std::string errCode, std::string cmd, std::string param, std::string warnMessage) {
+    std::string result = ":" + user.getServerName() + " " + errCode + " " + user.getNickName() + " :" + cmd + " :" + param + " :" + warnMessage;
+    sendToClient(user.getFd(), result);
 }
 
 /**

@@ -11,7 +11,7 @@ class Topic : public Command {
         UserInfo &user;
         std::map<std::string, Channel> &channels;
 
-        bool isSetTopicFunction();
+        bool isExistTopic();
         bool isValidChannel(); // 채널이 존재하는지 검증
         bool checkTopic(std::string name);
         void updateTopic(std::string name);
