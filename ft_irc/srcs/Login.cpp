@@ -12,8 +12,8 @@
 bool Login::isValidUserInfo() {
 	// USER -> userName(필수) : trailing
     // NICK -> nickname
-    std::cout << "nickName : " <<userInfo.getNickName() << std::endl;
-    std::cout << "userName : " <<userInfo.getUserName() << std::endl;
+    std::cout << "nickName : " << userInfo.getNickName() << std::endl;
+    std::cout << "userName : " << userInfo.getUserName() << std::endl;
 	if (userInfo.getNickName().empty() || userInfo.getUserName().empty()) {
 		return false;
 	}
@@ -21,7 +21,8 @@ bool Login::isValidUserInfo() {
 }
 
 Login::Login(UserInfo &userInfo, std::map<int, UserInfo> &allUsers, std::string serverName) : userInfo(userInfo), allUsers(allUsers), serverName(serverName) {
-	if (isValidUserInfo()) {
+	// 단순 닉네임 변경사항이라면, 접속 성공 띄우지 마셈
+	if (isValidUserInfo() && userInfo.getNick() == false) {
         userInfo.setActive(true); // 유저 등록
 		Communicate::sendToClient(userInfo.getFd(), "접속성공");
         return;

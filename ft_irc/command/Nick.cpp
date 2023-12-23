@@ -42,6 +42,7 @@ void Nick::execute()
 
     if (user.getActive()) {
         if (!isDuplicateNickName()) {
+            // 기존 유저의 닉네임 변경 시 setNick -> true 변환.
             user.setNick(true);
             user.setNickName(getParameters().at(0));
             Communicate::sendToClient(user.getFd(), "new NickName Set clear!");
@@ -52,8 +53,7 @@ void Nick::execute()
     }
 
     if (checkForm()) {
-        //switch nick Status
-        user.setNick(true);
+        // 닉네임 최초 등록
         user.setNickName(getParameters()[0]);
         std::cout << "set nickName compeleted";
     }
@@ -63,7 +63,6 @@ bool Nick::isDuplicateNickName() {
     std::map<int, UserInfo>::iterator it;
     for (it = allUserInfo.begin(); it != allUserInfo.end(); it++) {
         // 입력한 닉네임과, 기존에 로그인이 성공한 닉네임이 겹친다면..
-        std::cout << "닉네임 먼데 시바 ㅠ" << it->second.getNickName() << std::endl;
         if ((it->second.getNickName() == getParameters().at(0)) && it->second.getActive()) {
             return true;
         }
