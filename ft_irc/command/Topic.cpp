@@ -15,19 +15,19 @@ bool Topic::isValidChannel()
     return false;
 }
 
-// topic이 비어있다면 false 반환
-bool Topic::validate() {
+// topic이 비어있다면 false 반환, 조회로 판별한다
+bool Topic::isSetTopicFunction() {
     return !getTrailing().empty();
 }
 
-// TOPIC이 다른 채널의 topic과 중복되는지 검증
 bool Topic::checkTopic(std::string topicName) {
-    // 모든 채널을 순회하며 존재하는 topic인지 검증한다.
+    // 모든 채널을 순회하며 존재하는 topic인지 검증한다. 이거 필요 업센 시발
     std::string topicName = getTrailing();
     std::map<std::string, Channel>::iterator it = channels.begin();
     for (; it != channels.end(); it++) {
         if (topicName == it->second.getTopic()) {
-            Communicate::generateWarnMessage(user, "402", getCmd(), getTrailing(), "is Duplicate Topic name");
+            // 이 에러코드 맞는건지 몰라여
+            Communicate::generateWarnMessage(user, "403", getCmd(), getTrailing(), "is Duplicate Topic name");
             return false;
         }
     }
@@ -35,7 +35,26 @@ bool Topic::checkTopic(std::string topicName) {
 }
 
 Topic::~Topic() {
+    if (!isValidChannel()) {
+        return;
+    }
+    if (isSetTopicFunction()) {
+        // 조회 기능
+        showChannelTopic();
+        return ;
+    }
+    updateTopic(getTrailing());
 }
+
+// 채널 내의 토픽을 보여주는 기능 -> 있으면 보여주고, 없으면 없다는 메세지 보여줘야됨
+void Topic::showChannelTopic() {
+    std::string channelName = getParameters().at(0);
+}
+
+void Topic::updateTopic(std::string topicName) {
+
+}
+
 /**
  * 
 예를 들어, 채널 #example의 토픽을 조회하려면 다음과 같이 TOPIC 명령어를 사용할 수 있습니다:

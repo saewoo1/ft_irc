@@ -11,10 +11,11 @@ class Topic : public Command {
         UserInfo &user;
         std::map<std::string, Channel> &channels;
 
-        bool validate();
-        bool isValidChannel();
-        void checkTopic(std::string name);
+        bool isSetTopicFunction();
+        bool isValidChannel(); // 채널이 존재하는지 검증
+        bool checkTopic(std::string name);
         void updateTopic(std::string name);
+        void showChannelTopic();
 
     public:
         Topic(Message *msg, UserInfo &user, std::map<std::string, Channel> &channels);
