@@ -198,7 +198,7 @@ Command *Server::createCommand(UserInfo &user, std::string recvStr) {
         else if (msg.getCmd() == "JOIN")
             cmd = new Join(&msg, user, channels);
         else if (msg.getCmd() == "PING")
-            cmd = new PING(&msg, user);
+            cmd = new Ping(&msg, user);
 
         return cmd;
 }
