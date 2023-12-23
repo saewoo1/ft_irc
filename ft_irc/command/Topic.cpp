@@ -81,15 +81,3 @@ void Topic::execute() {
     // trailing이 존재한다면, 해당 Trailing으로 channel의 topic을 업데이트합니다.
     updateTopic(getTrailing());
 }
-/**
- * 
-예를 들어, 채널 #example의 토픽을 조회하려면 다음과 같이 TOPIC 명령어를 사용할 수 있습니다:
-TOPIC #example
-또는 토픽을 변경하려면:
-
-TOPIC #example :새로운 토픽 내용
-이 명령을 통해 해당 채널의 토픽이 변경됩니다.
- * 
-*/
-
-// 실제로 존재하는 채널인지 검수하는 기능
