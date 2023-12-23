@@ -199,6 +199,8 @@ Command *Server::createCommand(UserInfo &user, std::string recvStr) {
             cmd = new Part(&msg, user, users, channels);
         else if (msg.getCmd() == "INVITE")
             cmd = new Invite(&msg, user, channels, users);
+        else if (msg.getCmd() == "KICK")
+            cmd = new Kick(&msg, user, users, channels);
         return cmd;
 }
 

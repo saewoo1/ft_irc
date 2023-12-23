@@ -13,7 +13,8 @@ SRCS = ./srcs/main.cpp \
 		./command/User.cpp \
 		./command/Join.cpp \
 		./command/Part.cpp \
-		./command/Invite.cpp
+		./command/Invite.cpp \
+		./command/Kick.cpp
 
 RM = rm -rf
 

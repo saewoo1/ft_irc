@@ -9,15 +9,15 @@
 class Invite : public Command {
 	private	:
 			UserInfo &user;
+			UserInfo *guest;
+			Channel *channel;
+			std::map<std::string, Channel> &channelList;
+			std::map<int, UserInfo>	&userList;
 			bool isPresentGeust(std::string &geustName);
 			bool isPresentChannel(std::string &channelName);
 			bool isGuestInChannel(std::string &geustName);
 			bool isOperator();
 	public	:
-			UserInfo *guest;
-			Channel *channel;
-			std::map<std::string, Channel> &channelList;
-			std::map<int, UserInfo>	&userList;
 
 			Invite(Message *msg, UserInfo &user, std::map<std::string, Channel> &channelList, std::map<int, UserInfo> &userList);
 			void execute();
