@@ -10,7 +10,6 @@ bool Nick::checkForm()
         return false;
     }
     if (isDuplicateNickName()) {
-        Communicate::sendToClient(user.getFd(), "중복된 닉네임입니다.");
         return false;
     }
     return true;
@@ -52,7 +51,6 @@ void Nick::execute()
             Communicate::sendToClient(user.getFd(), "new NickName Set clear!");
             return ;
         }
-        Communicate::sendToClient(user.getFd(), "중복된 닉네임입니다.");
         return ;
     }
 
@@ -68,6 +66,8 @@ bool Nick::isDuplicateNickName() {
     for (it = allUserInfo.begin(); it != allUserInfo.end(); it++) {
         // 입력한 닉네임과, 기존에 로그인이 성공한 닉네임이 겹친다면..
         if ((it->second.getNickName() == getParameters().at(0)) && it->second.getActive()) {
+            std::string result = ":" + user.getServerName() + " 436 " + user.getUserName() + ":" + getCmd() + ":Nickname collision";
+            Communicate::sendToClient(user.getFd(), result);
             return true;
         }
     }
