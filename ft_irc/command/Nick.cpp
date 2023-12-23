@@ -9,6 +9,10 @@ bool Nick::checkForm()
         Communicate::sendToClient(user.getFd(), warning);
         return false;
     }
+    if (isDuplicateNickName()) {
+        Communicate::sendToClient(user.getFd(), "중복된 닉네임입니다.");
+        return false;
+    }
     return true;
 }
 
