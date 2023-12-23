@@ -47,7 +47,6 @@ void PrivateMessage::sendChannelMsg() {
 }
 
 void PrivateMessage::execute() {
-    std::cout << "# 잇나용?" << getParameters().at(0)[0] << std::endl;
     if (isChannelMsg() && validateChannelMsg()) {
         std::cout << "채널 내의 모든 유저에게 메세지 전송을 시작합니다" << std::endl;
         sendChannelMsg(); // 채널 내의 모든 사용자에게 메세지를 전달한다
@@ -68,7 +67,7 @@ void PrivateMessage::execute() {
          Communicate::sendToClient(user.getFd(), "없는 닉네임한테 귓속말 금지");
          return;
      }
-     Communicate::sendToClient(getReceiverFd(), generateSendFormat());
+    Communicate::sendToClient(getReceiverFd(), generateSendFormat());
 
 }
 
