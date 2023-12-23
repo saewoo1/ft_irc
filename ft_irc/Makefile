@@ -12,6 +12,9 @@ SRCS = ./srcs/main.cpp \
 		./command/Pass.cpp \
 		./command/User.cpp \
 		./command/Join.cpp \
+		./command/Part.cpp \
+		./command/Invite.cpp \
+		./command/Kick.cpp
 		./command/PrivateMessage.cpp \
 		./command/Topic.cpp
 

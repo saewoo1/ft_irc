@@ -23,6 +23,9 @@
 #include "../command/User.hpp"
 #include "../command/PrivateMessage.hpp"
 #include "../command/Join.hpp"
+#include "../command/Part.hpp"
+#include "../command/Invite.hpp"
+#include "../command/Kick.hpp"
 #include "../command/Topic.hpp"
 #include "Channel.hpp"
 

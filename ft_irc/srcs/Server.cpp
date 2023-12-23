@@ -197,6 +197,12 @@ Command *Server::createCommand(UserInfo &user, std::string recvStr) {
             cmd = new PrivateMessage(&msg, user, users, channels);
         else if (msg.getCmd() == "JOIN")
             cmd = new Join(&msg, user, channels);
+        else if (msg.getCmd() == "PART")
+            cmd = new Part(&msg, user, users, channels);
+        else if (msg.getCmd() == "INVITE")
+            cmd = new Invite(&msg, user, channels, users);
+        else if (msg.getCmd() == "KICK")
+            cmd = new Kick(&msg, user, users, channels);
         else if (msg.getCmd() == "TOPIC") {
             cmd = new Topic(&msg, user, channels);
         }
