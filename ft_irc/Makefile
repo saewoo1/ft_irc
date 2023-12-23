@@ -13,6 +13,7 @@ SRCS = ./srcs/main.cpp \
 		./command/User.cpp \
 		./command/Join.cpp \
 		./command/PrivateMessage.cpp \
+		./command/Ping.cpp
 
 RM = rm -rf
 

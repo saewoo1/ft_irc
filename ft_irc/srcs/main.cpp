@@ -28,10 +28,10 @@ int main(int ac, char **av) {
                         std::cout << "읽을 이벤트 없다" << std::endl;
                         continue;
                     }
-                    // 이벤트가 존재하지만 끝났거나, 에러가 발생한 케이스라면 서버를 종료합니다.
+                    // 이벤트가 존재하지만 끝났거나, 에러가 발생한 케이스라면 해당 클라이언트만 서버로부터 접속을 종료합니다.
                     if (server.pollfds[i].revents & POLLHUP || server.pollfds[i].revents & POLLERR) {
-                        std::cout << "bye~" << std::endl;
                         server.quitServer(i);
+                        std::cout << "bye~" << std::endl;
                     } 
                     else if (server.pollfds[i].revents & POLLIN) {
                         std::cout << "이벤트가 존재하고, 데이터도 있네" << std::endl;
@@ -50,6 +50,7 @@ int main(int ac, char **av) {
 
                             // crlf("\r\n")이 아닐 경우, 문자열만 저장해준다
                             if (recvStr.find("\r\n") == std::string::npos) {
+                                std::cout << "어디갔노.." << recvStr << std::endl;
                                 continue;
                             }
 
