@@ -7,5 +7,7 @@
 class Communicate {
     public  :
             static void sendToClient(int clientFd, std::string warning);
+            static void generateWarnMessage(UserInfo user, std::string errCode,
+                                                    std::string cmd, std::string param, std::string warnMessage);
 };
 #endif
