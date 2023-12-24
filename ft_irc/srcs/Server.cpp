@@ -207,9 +207,12 @@ Command *Server::createCommand(UserInfo &user, std::string recvStr) {
         cmd = new Topic(&msg, user, channels);
     else if (msg.getCmd() == "QUIT")
         cmd = new Quit(&msg, user, channels, users, pollfds);
+    else if (msg.getcmd() == "MODE")
+        cmd = new Mode(&msg, user, users, channels);
     else
         Communicate::sendMessage(user, "421", msg.getCmd(), "Unknown command");
     return cmd;
+
 }
 
 void Server::executeCommand(Command *cmd, UserInfo &info) {
@@ -274,37 +277,3 @@ void Server::quitServer(int i) {
     close(info.getFd());
     pollfds.erase(pollfds.begin() + i);
 }
-
-
-
-// void Server::quitServer(int i) {
-//     UserInfo &info = getUserInfoByFd(pollfds[i].fd);
-//     std::map<std::string, bool>::iterator it = info.channels.begin(); // 모든 채널들
-
-//     for (; it != info.channels.end(); it++) {
-//         std::string channelName = it->first;
-//         // 서버 내에 존재하는 채널명 하나 따오기.
-//         std::map<std::string, Channel>::iterator channelIt = channels.find(channelName);
-//         if (channelIt != channels.end()) {
-//         // 유저 삭제
-//             Channel &channel = channelIt->second;
-//             channel.users.erase(info.getNickName());
-//             channel.operators.erase(info.getNickName());
-//             channel.invite.erase(info.getNickName());
-    
-//             std::map<std::string, UserInfo>::iterator userIt = channel.users.begin();
-//             for (; userIt != channel.users.end(); userIt++) {
-//                 UserInfo &userInChatRoom = userIt->second;
-
-//                 if (userInChatRoom.getFd() == info.getFd()) {
-//                     continue;
-//                 }
-//                 std::string bye = ":" + info.getNickName() + "!" + info.getUserName() + "@" + info.getServerName() + " QUIT :Quit: leaving";
-//                 Communicate::sendToClient(userInChatRoom.getFd(), bye);
-//             }
-//         }
-//     }
-//     users.erase(info.getFd());
-//     close(info.getFd());
-//     pollfds.erase(pollfds.begin() + i);
-// }

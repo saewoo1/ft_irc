@@ -17,7 +17,8 @@ SRCS = ./srcs/main.cpp \
 		./command/Kick.cpp \
 		./command/PrivateMessage.cpp \
 		./command/Topic.cpp \
-		./command/Quit.cpp
+		./command/Quit.cpp \
+		./command/Mode.cpp
 
 RM = rm -rf
 
