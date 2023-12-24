@@ -44,7 +44,11 @@ void Mode::execute()
     }
 
     std::vector<std::string> options = getOptions(this->getParameters().at(1));
+    executeOptions(options);
 
+    if (changedModeOptions.size()) {
+        sendMsg();
+    }
 }
 
 
@@ -231,7 +235,7 @@ void Mode::executeLimit(std::string mode)
 
         if (!(iss >> num)) {
             if (std::atoll(this->getParameters().at(this->paramIndex).c_str()) == 0) {
-                num == 0;
+                num = 0;
             } else {
                 std::string msg = ":" + this->user.getServerName() + " 696 " + this->user.getNickName() + " " + \
                         this->channel->getName() + " l " + this->getParameters().at(this->paramIndex) + " :Invalid limit mode parameter. Syntax: <limit>.\n";
@@ -353,3 +357,54 @@ void Mode::executeNon(std::string mode)
     Communicate::sendToClient(this->user.getFd(), msg);
 }
 
+void Mode::sendMsg()
+{
+    std::string str = deleteSignInOptions();
+	int paramSize = this->changedModeOptions.size();
+
+	if (!paramSize)
+		str = " :" + str;
+	else
+	{
+		str = " " + str;
+		int i;
+		for (i = 0; i < paramSize - 1; i++)
+			str = str + " " + this->changedModeOptions[i];
+		str = str + " :" + this->changedModeOptions[i];
+	}
+	std::map<std::string, UserInfo>::iterator it = this->channel->users.begin();
+
+	for (; it != this->channel->users.end(); it++)
+	{
+		UserInfo userInfo = it->second;
+
+		std::string msg = ":" + this->user.getNickName() + "!" + userInfo.getHostName() + "@" + userInfo.getServerName() + \
+                    " MODE " + this->channel->getName() + str;
+
+		Communicate::sendToClient(this->user.getFd(), msg);
+	}
+}
+
+std::string Mode::deleteSignInOptions() 
+{
+    std::string str = this->changedModeOptions[0];
+	char flag;
+
+	if (this->changedModeOptions[0][0] == '+')
+		flag = '+';
+	else
+		flag = '-';
+
+	for (size_t i = 1; i < this->changedModeOptions.size(); ++i)
+	{
+		if (this->changedModeOptions[i][0] == flag)
+			str += this->changedModeOptions[i].erase(0, 1);
+		else
+		{
+			str += this->changedModeOptions[i];
+			flag = this->changedModeOptions[i][0];
+		}
+	}
+
+	return str;
+}

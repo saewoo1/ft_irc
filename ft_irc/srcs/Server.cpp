@@ -203,9 +203,10 @@ Command *Server::createCommand(UserInfo &user, std::string recvStr) {
             cmd = new Invite(&msg, user, channels, users);
         else if (msg.getCmd() == "KICK")
             cmd = new Kick(&msg, user, users, channels);
-        else if (msg.getCmd() == "TOPIC") {
+        else if (msg.getCmd() == "TOPIC")
             cmd = new Topic(&msg, user, channels);
-        }
+        else if (msg.getCmd() == "MODE")
+            cmd = new Mode(&msg, user, users, channels);
 
         return cmd;
 }
