@@ -84,7 +84,7 @@ int PrivateMessage::getReceiverFd() {
 }
 std::string PrivateMessage::generateSendFormat() {
     std::string result = ":" + getParameters().at(0) + "!"
-            + user.getUserName() + "@" + "아이피어케넣죠"
+            + user.getNickName() + "@" + user.getHostName()
             + getCmd() + ":" + getTrailing();
     return result;
 }
