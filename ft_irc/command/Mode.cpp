@@ -1,6 +1,6 @@
 #include "Mode.hpp"
 
-Mode::Mode(Message *msg, UserInfo &user, std::map<int, UserInfo> &userList, std::map<std::string, Channel> &channelList) : Command(msg), user(user), userList(userList), channelList(channelList)
+Mode::Mode(Message *msg, UserInfo &user, std::map<int, UserInfo> &userList, std::map<std::string, Channel> &channelList) : Command(msg), user(user), userList(userList), channelList(channelList), paramIndex(2)
 {
 }
 
@@ -34,10 +34,17 @@ void Mode::execute()
     if (this->getParameters()[1].size() < 2) {
         return ;
     }
-
+    // 첫번째 요소가 '-' or '+'이어야한다
     if (this->getParameters()[1][0] != '-' && this->getParameters()[1][0] != '+') {
         return ;
     }
+    // operator 인지 확인
+    if (!isOperator()) {
+        return ;
+    }
+
+    std::vector<std::string> options = getOptions(this->getParameters().at(1));
+
 }
 
 
@@ -86,3 +93,263 @@ std::string Mode::getModeStatus()
 
     return status;
 }
+
+bool Mode::isOperator()
+{
+	std::map<std::string, UserInfo>::iterator it = this->channel->operators.find(this->user.getNickName());
+	if (it == this->channel->operators.end()) {
+		std::string msg = ":" + this->user.getHostName() + " 481 " + this->channel->getName() + " :Permission Denied- You're not an IRC operator\n";
+		Communicate::sendToClient(this->user.getFd(), msg);
+		return false;
+	}
+    return true;
+}
+
+std::vector<std::string> Mode::getOptions(std::string &option)
+{
+    std::string sign;
+    std::vector<std::string> inputOptions;
+    std::vector<std::string> options;
+
+    for (size_t i = 0; i < option.length(); i++) {
+        if (option[i] == '+') {
+            sign = "+";
+        } else if (option[i] == '-'){
+            sign = "-";
+        } else {
+            inputOptions.push_back(sign + option[i]);
+        }
+    }
+
+    // 중복 제거
+    options.push_back(inputOptions[0]);
+    for (size_t i = 1; i < inputOptions.size(); i++) {
+        if (options.back() != inputOptions[i]) {
+            options.push_back(inputOptions[i]);
+        }
+    }
+    return options;
+}
+
+void Mode::executeOptions(std::vector<std::string> options)
+{
+    for (std::vector<std::string>::iterator it = options.begin(); it != options.end(); it++) {
+        std::string mode = *it;
+
+        switch (mode[1])
+        {
+            case 'i' :
+                executeInvite();
+                break ;
+            case 'k' :
+                executeKey();
+                break ;
+            case 'l' :
+                executeLimit();
+                break ;
+            case 'o':
+                executeOperator();
+                break ;
+            case 't':
+                executeTopic();
+                break ;
+            default:
+                executeNon();
+                break ;
+        }
+    }
+}
+
+void Mode::executeInvite(std::string mode)
+{
+    if (mode == "+i" && this->channel->getInviteMode()) {
+        return ;
+    }
+    if (mode == "-i" && !this->channel->getInviteMode()) {
+        return ;
+    }
+
+    this->channel->changeInviteMode();
+    this->changedModeOptions.push_back(mode);
+}
+
+void Mode::executeKey(std::string mode)
+{
+    // 뒤에 비밀 번호가 들어오지 않았을 경우
+    if (this->paramIndex > this->getParameters().size() - 1) {
+        std::string msg = ":" + this->user.getServerName() + " 696 " + this->user.getNickName() + " " + this->channel->getName() + \
+                    " k * :You must specify a parameter for the key mode. Syntax: <key>.\n";
+        Communicate::sendToClient(this->user.getFd(), msg);
+        return ;
+    }
+
+    if (!this->channel->getKeyMode() && mode == "+k") {
+        this->channel->setKeyMode(true);
+        this->channel->setKey(this->getParameters().at(paramIndex));
+        this->changedModeOptions.push_back(mode);
+        this->changedParam.push_back(this->channel->getKey());
+        this->paramIndex++;
+        return ;
+    }
+
+    if (this->channel->getKeyMode() && mode == "-k") {
+        if (this->getParameters().at(paramIndex) == this->channel->getKey()) {
+            this->channel->setKeyMode(false);
+            this->changedModeOptions.push_back(mode);
+            this->changedParam.push_back(this->channel->getKey());
+            this->channel->setKey("");
+        } else {
+            std::string msg = ":" + this->user.getServerName() + " 467 " + this->user.getNickName() + " " + \
+                                this->channel->getName() + " :Channel key already set\n";
+            Communicate::sendToClient(this->user.getFd(), msg);
+        }
+        this->paramIndex++;
+        return ;
+    }
+}
+
+void Mode::executeLimit(std::string mode)
+{
+    if (mode == "-l" && this->channel->getLimitMode()) {
+        this->channel->setLimit(0);
+        this->channel->setLimitMode(false);
+        this->changedModeOptions.push_back(mode);
+
+        return ;
+    }
+
+    if (mode == "+l") {
+        if (this->paramIndex > this->getParameters().size() - 1) {
+            std::string msg = ":" + this->user.getServerName() + " 696 " + this->user.getNickName() + " " + this->channel->getName() + \
+                        " l * :You must specify a parameter for the limit mode. Syntax: <limit>.\n";
+            Communicate::sendToClient(this->user.getFd(), msg);
+            return ;
+        }
+
+        std::istringstream iss(this->getParameters().at(this->paramIndex));
+        long long num;
+
+        if (!(iss >> num)) {
+            if (std::atoll(this->getParameters().at(this->paramIndex).c_str()) == 0) {
+                num == 0;
+            } else {
+                std::string msg = ":" + this->user.getServerName() + " 696 " + this->user.getNickName() + " " + \
+                        this->channel->getName() + " l " + this->getParameters().at(this->paramIndex) + " :Invalid limit mode parameter. Syntax: <limit>.\n";
+                Communicate::sendToClient(this->user.getFd(), msg);
+                this->paramIndex++;
+
+                return ;
+            }
+        }
+
+        if (num < 0) {
+            std::string msg = ":" + this->user.getServerName() + " 696 " + this->user.getNickName() + " " + \
+                        this->channel->getName() + " l " + this->getParameters().at(this->paramIndex) + " :Invalid limit mode parameter. Syntax: <limit>.\n";
+                Communicate::sendToClient(this->user.getFd(), msg);
+                this->paramIndex++;
+
+                return ;
+        }
+
+        if (num == this->channel->getLimit()) {
+            this->paramIndex++;
+
+            return ;
+        }
+
+        std::stringstream ss;
+        ss << num;
+
+        this->channel->setLimit(num);
+        this->channel->setLimitMode(true);
+        this->changedModeOptions.push_back(mode);
+        this->changedParam.push_back(ss.str());
+
+        this->paramIndex++;
+    }
+}
+
+void Mode::executeOperator(std::string mode)
+{
+    if (this->paramIndex > this->getParameters().size() - 1) {
+        std::string msg = ":" + this->user.getServerName() + " 696 " + this->user.getNickName() + " " + this->channel->getName() + \
+                    " o * :You must specify a parameter for the op mode. Syntax: <nick>.\n";
+        Communicate::sendToClient(this->user.getFd(), msg);
+        
+        return ;
+    }
+
+    std::string userName = this->getParameters().at(this->paramIndex);
+
+    if (!isPresentUser(userName)) {
+        std::string msg = ":" + this->user.getServerName() + " 401 " + this->user.getNickName() + " " + userName + " :No such nick";
+        Communicate::sendToClient(this->user.getFd(), msg);
+
+        return ;
+    }
+
+    if (this->channel->isOperator(userName) && mode == "-o") {
+        std::map<std::string, UserInfo>::iterator it = this->channel->operators.find(userName);
+
+        this->channel->operators.erase(it);
+        changeUserInfo(*findByNickName(userName), false);
+        changedModeOptions.push_back(mode);
+        changedParam.push_back(userName);
+    } else if (!this->channel->isOperator(userName) && mode == "+o") {
+        this->channel->operators.insert(std::make_pair(userName, *findByNickName(userName)));
+        changeUserInfo(*findByNickName(userName), true);
+        changedModeOptions.push_back(mode);
+        changedParam.push_back(userName);
+    }
+
+    this->paramIndex++;
+}
+
+bool Mode::isPresentUser(std::string userName)
+{
+
+    for (std::map<int, UserInfo>::iterator it = this->userList.begin(); it != this->userList.end(); it++) {
+        if (it->second.getNickName() == userName) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void Mode::changeUserInfo(UserInfo &userInfo, bool type)
+{
+    for (std::map<std::string, bool>::iterator it = userInfo.channels.begin(); it != userInfo.channels.end(); it++) {
+        if (it->first == this->channel->getName()) {
+            userInfo.channels[it->first] = type;
+        }
+    }
+}
+
+UserInfo *Mode::findByNickName(std::string userName)
+{
+    for (std::map<int, UserInfo>::iterator it = this->userList.begin(); it != this->userList.end(); it++) {
+        if (it->second.getNickName() == userName) {
+            return &(it->second);
+        }
+    }
+    return 0;
+}
+
+void Mode::executeTopic(std::string mode)
+{
+    if ((mode == "+t" && !this->channel->getTopicMode()) || (mode == "-t" && this->channel->getTopicMode())) {
+        this->channel->changeTopicMode();
+        this->changedModeOptions.push_back(mode);
+    }
+}
+
+void Mode::executeNon(std::string mode)
+{
+    mode.erase(0, 1);
+    std::string msg = ":" + this->user.getServerName() + " 472 " + this->user.getNickName() + " " + mode + \
+                " :is not a recognised channel mode.\n";
+
+    Communicate::sendToClient(this->user.getFd(), msg);
+}
+
