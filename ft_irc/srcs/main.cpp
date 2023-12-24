@@ -50,7 +50,6 @@ int main(int ac, char **av) {
 
                             // crlf("\r\n")이 아닐 경우, 문자열만 저장해준다
                             if (recvStr.find("\r\n") == std::string::npos) {
-                                std::cout << "어디갔노.." << recvStr << std::endl;
                                 continue;
                             }
 
@@ -70,7 +69,6 @@ int main(int ac, char **av) {
                                     // 유저의 정보, 커맨드를 갖고 cmd를 따온다
                                     Command *cmd = server.createCommand(info, commands[i]);
                                     
-
                                     // cmd 수행하기
                                     server.executeCommand(cmd, info);
                                 } catch (const std::exception &e) {

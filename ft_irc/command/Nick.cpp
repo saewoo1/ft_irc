@@ -34,12 +34,10 @@ void Nick::execute()
     }
 
     if (getParameters().size() < 1) {
-        std::string warning = "431 :No nickname given";
-        Communicate::sendToClient(user.getFd(), warning);
+        Communicate::sendMessage(user, "431", getCmd(), "No nickname given");
         return ;
     }
-    // NICK J J J J -> J로 등록되는데 이거도 size 검수해서 param 1 아니면 에러 띄워여?
-
+    
     if (user.getActive()) {
         if (!isDuplicateNickName()) {
             // 기존 유저의 닉네임 변경 시 setNick -> true 변환.
@@ -48,7 +46,7 @@ void Nick::execute()
             Communicate::sendToClient(user.getFd(), "new NickName Set clear!");
             return ;
         }
-        Communicate::sendToClient(user.getFd(), "중복된 닉네임입니다.");
+        Communicate::sendMessage(user, "433", getCmd(), "Nickname is already in use");
         return ;
     }
 

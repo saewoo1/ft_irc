@@ -12,8 +12,6 @@
 bool Login::isValidUserInfo() {
 	// USER -> userName(필수) : trailing
     // NICK -> nickname
-    std::cout << "nickName : " << userInfo.getNickName() << std::endl;
-    std::cout << "userName : " << userInfo.getUserName() << std::endl;
 	if (userInfo.getNickName().empty() || userInfo.getUserName().empty()) {
 		return false;
 	}
@@ -63,13 +61,14 @@ void Login::generateLoginPage() {
 	":" + userInfo.getHostName() + " 372 " + name + " :⠀⠀⠀⠀⠀⠀⠀⠼⠉⣰⠏⠀⠄⠀⠀⠀⠀⠀⢹⣿⡳⣝⢮⡳⣕⢯⡫⣝⢮⡣⣗⢽⢭⡫⡮⡳⡵⣹⣪⡺⣪⢞⣕⢗⡳⣝⢼⡪⡮⡳⣽⢮⣿⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n"
 	":" + userInfo.getHostName() + " 372 " + name + " :⠀⠀⠀⠀⠀⠀⠀⠀⡘⠁⠀⠁⠄⠀⠀⠀⠀⠀⠀⢻⣿⣪⡳⣝⢮⢳⢝⢮⡳⣝⢮⡳⡳⣝⢮⢯⡺⡵⢵⢝⢮⡳⣕⢯⡺⣕⢗⣝⢮⣫⣿⡽⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n"
 	":" + userInfo.getHostName() + " 372 " + name + " :⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻⢷⣹⡪⣞⣝⢭⡳⣝⢎⣗⢽⣱⢳⢝⢮⡺⡭⡳⣝⢵⢝⢮⡳⣝⢮⡳⡳⣝⢾⡿⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n"
-	":" + userInfo.getHostName() + " 372 " + name + " :⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠑⠹⢪⢮⡳⣝⢮⡳⣕⢗⡵⣫⣫⡳⣝⢮⢯⡺⣹⢭⡳⣝⢮⢳⡹⠝⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n";
+	":" + userInfo.getHostName() + " 372 " + name + " :⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠑⠹⢪⢮⡳⣝⢮⡳⣕⢗⡵⣫⣫⡳⣝⢮⢯⡺⣹⢭⡳⣝⢮⢳⡹⠝⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n"
+	":" + userInfo.getHostName() + " 376 " + name + " :End of message of the day.";
 	Communicate::sendToClient(userInfo.getFd(), reply);
 }
 
 Login::Login(UserInfo &userInfo, std::map<int, UserInfo> &allUsers, std::string serverName) : userInfo(userInfo), allUsers(allUsers), serverName(serverName) {
 	// 단순 닉네임 변경사항이라면, 접속 성공 띄우지 마셈
-	if (isValidUserInfo() && userInfo.getNick() == false) {
+	if (isValidUserInfo() && userInfo.getNick() == false && userInfo.getActive() == false) {
         userInfo.setActive(true); // 유저 등록
 		generateLoginPage();
         return;

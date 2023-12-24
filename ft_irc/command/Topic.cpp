@@ -46,10 +46,10 @@ void Topic::showChannelTopic() {
     std::string channelName = getParameters().at(0);
     std::map<std::string, Channel>::iterator it = channels.find(channelName);
     // 만일 토픽이 세팅되어있지 않다면
-    std::cout << "topic이 뭘까?" << it->second.getTopic() << std::endl;
     if (it->second.getTopic().empty()) {
-        std::string result = ":" + user.getServerName() + " 331 " + user.getNickName() + " " + getParameters().at(0) + " :No topic is set";
-        Communicate::sendToClient(user.getFd(), result); 
+        Communicate::sendMessage(user, "331", getCmd(), "No topic is set");
+        // std::string result = ":" + user.getServerName() + " 331 " + user.getNickName() + " " + getParameters().at(0) + " :No topic is set";
+        // Communicate::sendToClient(user.getFd(), result); 
         return ;
     }
     // 해당 채널의 topic을 보여줍니다.

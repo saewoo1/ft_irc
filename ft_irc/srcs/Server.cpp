@@ -4,7 +4,7 @@
 /**
  * 포트 번호, 비밀번호로 실행 시작
 */
-Server::Server(int ac, char **av) : serverName("saewoo") {
+Server::Server(int ac, char **av) : serverName("BlackCowServer...") {
     if (ac != 3) {
         throw std::invalid_argument("Error invalid ac count");
     }
@@ -186,28 +186,30 @@ Command *Server::createCommand(UserInfo &user, std::string recvStr) {
     std::cout << msg.getOrigin() << std::endl;
     Command *cmd = 0;
 
-        // PASS 세팅을 최우선으로 할 것인가?
-    	if (msg.getCmd() == "PASS")
-		    cmd = new Pass(&msg, user, password);
-        else if (msg.getCmd() == "NICK")
-            cmd = new Nick(&msg, user, users);
-        else if (msg.getCmd() == "USER")
-            cmd = new User(&msg, user);
-        else if (msg.getCmd() == "PRIVMSG")
-            cmd = new PrivateMessage(&msg, user, users, channels);
-        else if (msg.getCmd() == "JOIN")
-            cmd = new Join(&msg, user, channels);
-        else if (msg.getCmd() == "PART")
-            cmd = new Part(&msg, user, users, channels);
-        else if (msg.getCmd() == "INVITE")
-            cmd = new Invite(&msg, user, channels, users);
-        else if (msg.getCmd() == "KICK")
-            cmd = new Kick(&msg, user, users, channels);
-        else if (msg.getCmd() == "TOPIC") {
-            cmd = new Topic(&msg, user, channels);
-        }
-
-        return cmd;
+    // PASS 세팅을 최우선으로 할 것인가?
+    if (msg.getCmd() == "PASS")
+        cmd = new Pass(&msg, user, password);
+    else if (msg.getCmd() == "NICK")
+        cmd = new Nick(&msg, user, users);
+    else if (msg.getCmd() == "USER")
+        cmd = new User(&msg, user);
+    else if (msg.getCmd() == "PRIVMSG")
+        cmd = new PrivateMessage(&msg, user, users, channels);
+    else if (msg.getCmd() == "JOIN")
+        cmd = new Join(&msg, user, channels);
+    else if (msg.getCmd() == "PART")
+        cmd = new Part(&msg, user, users, channels);
+    else if (msg.getCmd() == "INVITE")
+        cmd = new Invite(&msg, user, channels, users);
+    else if (msg.getCmd() == "KICK")
+        cmd = new Kick(&msg, user, users, channels);
+    else if (msg.getCmd() == "TOPIC")
+        cmd = new Topic(&msg, user, channels);
+    else if (msg.getCmd() == "QUIT")
+        cmd = new Quit(&msg, user, channels, users, pollfds);
+    else
+        Communicate::sendMessage(user, "421", msg.getCmd(), "Unknown command");
+    return cmd;
 }
 
 void Server::executeCommand(Command *cmd, UserInfo &info) {
