@@ -236,34 +236,75 @@ UserInfo &Server::getUserInfoByFd(int clientSocketFd) {
     return it->second;
 }
 
-
 void Server::quitServer(int i) {
     UserInfo &info = getUserInfoByFd(pollfds[i].fd);
     std::map<std::string, bool>::iterator it = info.channels.begin(); // 모든 채널들
 
     for (; it != info.channels.end(); it++) {
         std::string channelName = it->first;
-        // 서버 내에 존재하는 채널명 하나 따오기.
-        std::map<std::string, Channel>::iterator channerIt = channels.find(channelName);
+        // 서버 내에 존재하는 채널명 하나 가져오기
+        std::map<std::string, Channel>::iterator channelIt = channels.find(channelName);
 
-        // 유저 삭제
-        Channel &channel = channerIt->second;
-        channel.users.erase(info.getNickName());
-        channel.operators.erase(info.getNickName());
-        channel.invite.erase(info.getNickName());
+        if (channelIt != channels.end()) {
+            // 채널 객체 가져오기
+            Channel &channel = channelIt->second;
+            // 채널에서 사용자 제거
+            channel.users.erase(info.getNickName());
+            channel.operators.erase(info.getNickName());
+            channel.invite.erase(info.getNickName());
 
-        std::map<std::string, UserInfo>::iterator userIt = channel.users.begin();
-        for (; userIt != channel.users.end(); userIt++) {
-            UserInfo &userInChatRoom = userIt->second;
+            // 다른 사용자들에게 사용자가 나갔음을 알림
+            std::map<std::string, UserInfo>::iterator userIt = channel.users.begin();
+            for (; userIt != channel.users.end(); userIt++) {
+                UserInfo &userInChatRoom = userIt->second;
 
-            if (userInChatRoom.getFd() == info.getFd()) {
-                continue;
+                if (userInChatRoom.getFd() == info.getFd()) {
+                    continue; // 나가는 사용자는 건너뜀
+                }
+
+                // 다른 사용자에게 사용자가 나갔음을 알림
+                std::string bye = ":" + info.getNickName() + "!" + info.getUserName() + "@" + info.getServerName() + " QUIT :Quit: leaving";
+                Communicate::sendToClient(userInChatRoom.getFd(), bye);
             }
-            std::string bye = ":" + info.getNickName() + "!" + info.getUserName() + "@" + info.getServerName() + " QUIT :Quit: leaving";
-            Communicate::sendToClient(userInChatRoom.getFd(), bye);
         }
     }
+
+    // 사용자를 사용자 맵에서 제거, 소켓을 닫고 pollfd를 제거
     users.erase(info.getFd());
     close(info.getFd());
     pollfds.erase(pollfds.begin() + i);
 }
+
+
+
+// void Server::quitServer(int i) {
+//     UserInfo &info = getUserInfoByFd(pollfds[i].fd);
+//     std::map<std::string, bool>::iterator it = info.channels.begin(); // 모든 채널들
+
+//     for (; it != info.channels.end(); it++) {
+//         std::string channelName = it->first;
+//         // 서버 내에 존재하는 채널명 하나 따오기.
+//         std::map<std::string, Channel>::iterator channelIt = channels.find(channelName);
+//         if (channelIt != channels.end()) {
+//         // 유저 삭제
+//             Channel &channel = channelIt->second;
+//             channel.users.erase(info.getNickName());
+//             channel.operators.erase(info.getNickName());
+//             channel.invite.erase(info.getNickName());
+    
+//             std::map<std::string, UserInfo>::iterator userIt = channel.users.begin();
+//             for (; userIt != channel.users.end(); userIt++) {
+//                 UserInfo &userInChatRoom = userIt->second;
+
+//                 if (userInChatRoom.getFd() == info.getFd()) {
+//                     continue;
+//                 }
+//                 std::string bye = ":" + info.getNickName() + "!" + info.getUserName() + "@" + info.getServerName() + " QUIT :Quit: leaving";
+//                 Communicate::sendToClient(userInChatRoom.getFd(), bye);
+//             }
+//         }
+//     }
+//     users.erase(info.getFd());
+//     close(info.getFd());
+//     pollfds.erase(pollfds.begin() + i);
+// }
