@@ -139,22 +139,22 @@ void Mode::executeOptions(std::vector<std::string> options)
         switch (mode[1])
         {
             case 'i' :
-                executeInvite();
+                executeInvite(mode);
                 break ;
             case 'k' :
-                executeKey();
+                executeKey(mode);
                 break ;
             case 'l' :
-                executeLimit();
+                executeLimit(mode);
                 break ;
             case 'o':
-                executeOperator();
+                executeOperator(mode);
                 break ;
             case 't':
-                executeTopic();
+                executeTopic(mode);
                 break ;
             default:
-                executeNon();
+                executeNon(mode);
                 break ;
         }
     }
