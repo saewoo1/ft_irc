@@ -207,7 +207,7 @@ Command *Server::createCommand(UserInfo &user, std::string recvStr) {
         cmd = new Topic(&msg, user, channels);
     else if (msg.getCmd() == "QUIT")
         cmd = new Quit(&msg, user, channels, users, pollfds);
-    else if (msg.getcmd() == "MODE")
+    else if (msg.getCmd() == "MODE")
         cmd = new Mode(&msg, user, users, channels);
     else
         Communicate::sendMessage(user, "421", msg.getCmd(), "Unknown command");
