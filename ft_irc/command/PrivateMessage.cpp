@@ -9,12 +9,6 @@
  * 4. 개인 -> 한명의 fd 값에 메세지 전달
 */
 PrivateMessage::PrivateMessage(Message *msg, UserInfo &user, std::map<int, UserInfo> allUserInfo, std::map<std::string, Channel> allChannels) : Command(msg), user(user), allUser(allUserInfo), allChannels(allChannels) {
-    // 메세지 포매팅만 검증한다.
-    if (!validateFormat()) {
-        std::string result = "수신 메세지 형식이 올바르지 않습니다.";
-        Communicate::sendToClient(user.getFd(), result);
-        return;
-    }
 }
 
 bool PrivateMessage::isChannelMsg() {
@@ -47,6 +41,12 @@ void PrivateMessage::sendChannelMsg() {
 }
 
 void PrivateMessage::execute() {
+    if (!validateFormat()) {
+        std::string result = "수신 메세지 형식이 올바르지 않습니다.";
+        Communicate::sendToClient(user.getFd(), result);
+        return;
+    }
+
     if (isChannelMsg() && validateChannelMsg()) {
         std::cout << "채널 내의 모든 유저에게 메세지 전송을 시작합니다" << std::endl;
         sendChannelMsg(); // 채널 내의 모든 사용자에게 메세지를 전달한다
