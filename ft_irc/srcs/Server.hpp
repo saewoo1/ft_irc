@@ -27,6 +27,7 @@
 #include "../command/Invite.hpp"
 #include "../command/Kick.hpp"
 #include "../command/Topic.hpp"
+#include "../command/Mode.hpp"
 #include "Channel.hpp"
 
 class Server {

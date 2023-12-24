@@ -30,6 +30,8 @@ class Mode : public Command {
 			bool isPresentUser(std::string);
 			void changeUserInfo(UserInfo &userInfo, bool type);
 			UserInfo *findByNickName(std::string);
+			void sendMsg();
+			std::string deleteSignInOptions();
 	public	:
 			Mode(Message *msg, UserInfo &user, std::map<int, UserInfo> &userList,std::map<std::string, Channel> &channelList);
 			void	execute();
