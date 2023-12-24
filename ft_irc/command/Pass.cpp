@@ -14,15 +14,13 @@ void Pass::execute()
 
         std::string warning = "461 PASS :Not enough parameters";
         sedMsgToClient(user.getFd(), warning);
-        close(user.getFd());
+        return ;
     }
 
     if (user.getActive()) {
 
         std::string warning = "462 :You may not reregister";
         sedMsgToClient(user.getFd(), warning);
-        close(user.getFd());
-
         return ;
     }
 
@@ -32,10 +30,7 @@ void Pass::execute()
         std::cout << user.getFd() <<" password complete" << std::endl;
         
     } else {
-        std::string warning = "464 :Password incorrect";
-        sedMsgToClient(user.getFd(), warning);
-        close(user.getFd());
-
+        Communicate::sendMessage(user, "464", "PASS", "Password incorrect");
         return ;
     }
 }
@@ -44,9 +39,7 @@ void sedMsgToClient(int fd, std::string str)
 {
     str += "\r\n";
 	const char *reply = str.c_str();
-
 	std::cout << str;
-
 	int result = send(fd, const_cast<char *>(reply), strlen(reply), 0);
 
 	if (result == -1)

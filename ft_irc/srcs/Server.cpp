@@ -4,7 +4,7 @@
 /**
  * 포트 번호, 비밀번호로 실행 시작
 */
-Server::Server(int ac, char **av) : serverName("saewoo") {
+Server::Server(int ac, char **av) : serverName("BlackCowServer...") {
     if (ac != 3) {
         throw std::invalid_argument("Error invalid ac count");
     }
@@ -186,29 +186,33 @@ Command *Server::createCommand(UserInfo &user, std::string recvStr) {
     std::cout << msg.getOrigin() << std::endl;
     Command *cmd = 0;
 
-        // PASS 세팅을 최우선으로 할 것인가?
-    	if (msg.getCmd() == "PASS")
-		    cmd = new Pass(&msg, user, password);
-        else if (msg.getCmd() == "NICK")
-            cmd = new Nick(&msg, user, users);
-        else if (msg.getCmd() == "USER")
-            cmd = new User(&msg, user);
-        else if (msg.getCmd() == "PRIVMSG")
-            cmd = new PrivateMessage(&msg, user, users, channels);
-        else if (msg.getCmd() == "JOIN")
-            cmd = new Join(&msg, user, channels);
-        else if (msg.getCmd() == "PART")
-            cmd = new Part(&msg, user, users, channels);
-        else if (msg.getCmd() == "INVITE")
-            cmd = new Invite(&msg, user, channels, users);
-        else if (msg.getCmd() == "KICK")
-            cmd = new Kick(&msg, user, users, channels);
-        else if (msg.getCmd() == "TOPIC")
-            cmd = new Topic(&msg, user, channels);
-        else if (msg.getCmd() == "MODE")
-            cmd = new Mode(&msg, user, users, channels);
+    // PASS 세팅을 최우선으로 할 것인가?
+    if (msg.getCmd() == "PASS")
+        cmd = new Pass(&msg, user, password);
+    else if (msg.getCmd() == "NICK")
+        cmd = new Nick(&msg, user, users);
+    else if (msg.getCmd() == "USER")
+        cmd = new User(&msg, user);
+    else if (msg.getCmd() == "PRIVMSG")
+        cmd = new PrivateMessage(&msg, user, users, channels);
+    else if (msg.getCmd() == "JOIN")
+        cmd = new Join(&msg, user, channels);
+    else if (msg.getCmd() == "PART")
+        cmd = new Part(&msg, user, users, channels);
+    else if (msg.getCmd() == "INVITE")
+        cmd = new Invite(&msg, user, channels, users);
+    else if (msg.getCmd() == "KICK")
+        cmd = new Kick(&msg, user, users, channels);
+    else if (msg.getCmd() == "TOPIC")
+        cmd = new Topic(&msg, user, channels);
+    else if (msg.getCmd() == "QUIT")
+        cmd = new Quit(&msg, user, channels, users, pollfds);
+    else if (msg.getcmd() == "MODE")
+        cmd = new Mode(&msg, user, users, channels);
+    else
+        Communicate::sendMessage(user, "421", msg.getCmd(), "Unknown command");
+    return cmd;
 
-        return cmd;
 }
 
 void Server::executeCommand(Command *cmd, UserInfo &info) {
@@ -235,33 +239,40 @@ UserInfo &Server::getUserInfoByFd(int clientSocketFd) {
     return it->second;
 }
 
-
 void Server::quitServer(int i) {
     UserInfo &info = getUserInfoByFd(pollfds[i].fd);
     std::map<std::string, bool>::iterator it = info.channels.begin(); // 모든 채널들
 
     for (; it != info.channels.end(); it++) {
         std::string channelName = it->first;
-        // 서버 내에 존재하는 채널명 하나 따오기.
-        std::map<std::string, Channel>::iterator channerIt = channels.find(channelName);
+        // 서버 내에 존재하는 채널명 하나 가져오기
+        std::map<std::string, Channel>::iterator channelIt = channels.find(channelName);
 
-        // 유저 삭제
-        Channel &channel = channerIt->second;
-        channel.users.erase(info.getNickName());
-        channel.operators.erase(info.getNickName());
-        channel.invite.erase(info.getNickName());
+        if (channelIt != channels.end()) {
+            // 채널 객체 가져오기
+            Channel &channel = channelIt->second;
+            // 채널에서 사용자 제거
+            channel.users.erase(info.getNickName());
+            channel.operators.erase(info.getNickName());
+            channel.invite.erase(info.getNickName());
 
-        std::map<std::string, UserInfo>::iterator userIt = channel.users.begin();
-        for (; userIt != channel.users.end(); userIt++) {
-            UserInfo &userInChatRoom = userIt->second;
+            // 다른 사용자들에게 사용자가 나갔음을 알림
+            std::map<std::string, UserInfo>::iterator userIt = channel.users.begin();
+            for (; userIt != channel.users.end(); userIt++) {
+                UserInfo &userInChatRoom = userIt->second;
 
-            if (userInChatRoom.getFd() == info.getFd()) {
-                continue;
+                if (userInChatRoom.getFd() == info.getFd()) {
+                    continue; // 나가는 사용자는 건너뜀
+                }
+
+                // 다른 사용자에게 사용자가 나갔음을 알림
+                std::string bye = ":" + info.getNickName() + "!" + info.getUserName() + "@" + info.getServerName() + " QUIT :Quit: leaving";
+                Communicate::sendToClient(userInChatRoom.getFd(), bye);
             }
-            std::string bye = ":" + info.getNickName() + "!" + info.getUserName() + "@" + info.getServerName() + " QUIT :Quit: leaving";
-            Communicate::sendToClient(userInChatRoom.getFd(), bye);
         }
     }
+
+    // 사용자를 사용자 맵에서 제거, 소켓을 닫고 pollfd를 제거
     users.erase(info.getFd());
     close(info.getFd());
     pollfds.erase(pollfds.begin() + i);
