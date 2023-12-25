@@ -14,7 +14,6 @@ int Join::validateJoinExecute(const std::string &channelName, const std::string 
     }
     std::map<std::string, Channel>::iterator it = channelList.find(channelName);
 
-	// 찾지 못했다면?
     if (it == channelList.end()) {
         if (channelName[0] != '#') {
 			std::string msg = ":" + this->user.getServerName() + " 403 " + this->user.getNickName() + " :JOIN :" + channelName + \
@@ -22,10 +21,8 @@ int Join::validateJoinExecute(const std::string &channelName, const std::string 
 			Communicate::sendToClient(this->user.getFd(), msg);
             return 1;
         }
-		// std::cout << "없는 채널이니?" << std::endl;
         createNewChannel(channelName);
     } else {
-		// std::cout << "있는 채널이니?" << std::endl;
         joinChannel(channelName, password);
     }
 	return 0;
@@ -33,14 +30,8 @@ int Join::validateJoinExecute(const std::string &channelName, const std::string 
 
 void Join::createNewChannel(std::string channelName)
 {
-	// 새로운 채널을 만듦. userInfo, 채널명
     Channel newChannel(this->user, channelName);
-	// std::cout << "채널명?" << channelName << std::endl;
-	// Server측 채널 리스트에도 해당 사항을 업데이트 한다.
     channelList.insert(std::make_pair(channelName, newChannel));
-	// for (std::map<std::string, Channel>::iterator it = channelList.begin(); it != channelList.end(); it++) {
-	// 	std::cout << "업데이트 되었낭?" << it->second.getName() << std::endl;
-	// }
 
     newChannel.operators.insert(std::make_pair(this->user.getNickName(), this->user));
     newChannel.users.insert(std::make_pair(this->user.getNickName(), this->user));

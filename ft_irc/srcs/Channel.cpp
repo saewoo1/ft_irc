@@ -1,6 +1,6 @@
 #include "Channel.hpp"
 
-Channel::Channel(UserInfo &user, std::string name) : key(""), topic(""), limit(-1), userCount(1), inviteMode(false), keyMode(false), limitMode(false), topicMode(true)
+Channel::Channel(UserInfo &user, std::string name) : key(""), topic(""), limit(-1), userCount(1), inviteMode(true), keyMode(false), limitMode(false), topicMode(true)
 {
 	if (name.length() > 200)
 		this->name = name.substr(0, 200);
