@@ -186,7 +186,6 @@ Command *Server::createCommand(UserInfo &user, std::string recvStr) {
     std::cout << msg.getOrigin() << std::endl;
     Command *cmd = 0;
 
-    // PASS 세팅을 최우선으로 할 것인가?
     if (msg.getCmd() == "PASS")
         cmd = new Pass(&msg, user, password);
     else if (msg.getCmd() == "NICK")
@@ -219,7 +218,6 @@ void Server::executeCommand(Command *cmd, UserInfo &info) {
     if (cmd) {
         cmd->execute();
 
-        // Active -> 로그인 성공!
         if (cmd->getCmd() == "NICK" || cmd->getCmd() == "USER") {
             Login(info, users, getServerName());
         }
@@ -271,8 +269,7 @@ void Server::quitServer(int i) {
             }
         }
     }
-
-    // 사용자를 사용자 맵에서 제거, 소켓을 닫고 pollfd를 제거
+    info.setActive(false);
     users.erase(info.getFd());
     close(info.getFd());
     pollfds.erase(pollfds.begin() + i);

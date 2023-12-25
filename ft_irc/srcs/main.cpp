@@ -25,7 +25,6 @@ int main(int ac, char **av) {
 
                 for (size_t i = 1; i < server.pollfds.size(); i++) {
                     if (server.pollfds[i].revents == 0) {
-                        std::cout << "읽을 이벤트 없다" << std::endl;
                         continue;
                     }
                     // 이벤트가 존재하지만 끝났거나, 에러가 발생한 케이스라면 해당 클라이언트만 서버로부터 접속을 종료합니다.
@@ -34,7 +33,6 @@ int main(int ac, char **av) {
                         std::cout << "bye~" << std::endl;
                     } 
                     else if (server.pollfds[i].revents & POLLIN) {
-                        std::cout << "이벤트가 존재하고, 데이터도 있네" << std::endl;
                         int fd = server.pollfds[i].fd; // 해당 이벤트를 읽어온다.
                         char buffer[512];
 
@@ -66,10 +64,8 @@ int main(int ac, char **av) {
                                 
                                 try {
                                     UserInfo &info = server.getUserInfoByFd(fd);
-                                    // 유저의 정보, 커맨드를 갖고 cmd를 따온다
                                     Command *cmd = server.createCommand(info, commands[i]);
                                     
-                                    // cmd 수행하기
                                     server.executeCommand(cmd, info);
                                 } catch (const std::exception &e) {
                                     std::cerr << e.what() << std::endl;
