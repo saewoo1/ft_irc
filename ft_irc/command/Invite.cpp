@@ -82,9 +82,7 @@ bool Invite::isPresentChannel(std::string &channelName)
 bool Invite::isGuestInChannel(std::string &guestName)
 {
 	std::cout << "channel people " << this->channel->users.size() << std::endl;
-	for (std::map<std::string, UserInfo>::iterator it = this->channel->users.begin(); it != this->channel->users.end(); it++) {
-		std::cout << "???? " << it->first << std::endl;
-	}
+
 	std::map<std::string, UserInfo>::iterator it = this->channel->users.find(guestName);
 	if (it != this->channel->users.end()) {
 		std::string msg = ":" + this->user.getHostName() + " 443 " + guestName + " " + this->channel->getName() + " :is already on channel\n";
