@@ -42,13 +42,11 @@ void PrivateMessage::sendChannelMsg() {
 
 void PrivateMessage::execute() {
     if (!validateFormat()) {
-        std::string result = "수신 메세지 형식이 올바르지 않습니다.";
-        Communicate::sendToClient(user.getFd(), result);
+        Communicate::sendMessage(user, "412", "PRIVMSG", "No text to send");
         return;
     }
 
     if (isChannelMsg() && validateChannelMsg()) {
-        std::cout << "채널 내의 모든 유저에게 메세지 전송을 시작합니다" << std::endl;
         sendChannelMsg(); // 채널 내의 모든 사용자에게 메세지를 전달한다
         return ;
     }
@@ -64,8 +62,8 @@ void PrivateMessage::execute() {
 
      // 모든 유저중에 닉네임 값을 가지고 순회 -> 일치하는 UserInfo를 찾아야 한다.
      if (getReceiverFd() == -1) {
-         Communicate::sendToClient(user.getFd(), "없는 닉네임한테 귓속말 금지");
-         return;
+        Communicate::sendMessage(user, "404", "PRIVMSG", "No such nick/channel");
+        return;
      }
     Communicate::sendToClient(getReceiverFd(), generateSendFormat());
 

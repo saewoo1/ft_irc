@@ -1,6 +1,8 @@
 #include "Server.hpp"
 
 std::vector<std::string> splitByCRLF(std::string &input);
+void ft_quit(Server &server, size_t i);
+
 int main(int ac, char **av) {
     try {
         /**
