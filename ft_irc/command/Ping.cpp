@@ -8,6 +8,15 @@ Ping::Ping(Message *msg, UserInfo &user) : Command(msg), user(user) {
  * 1. 서버에서 입력 -> ??? 얘 필수 아닌거같은디;
 */
 void Ping::execute() {
-    std::string result = ":" + user.getHostName() + " PONG " + getParameters().at(0);
+	std::string trailing = "";
+
+	std::istringstream iss(this->getOriginalMsg());
+	std::string command, rest;
+	std::getline(iss, command, ':');
+	std::getline(iss, rest);
+
+    if (rest != "")
+        trailing = rest;
+    std::string result = ":" + user.getHostName() + " PONG " + trailing;
     Communicate::sendToClient(user.getFd(), result);
 }

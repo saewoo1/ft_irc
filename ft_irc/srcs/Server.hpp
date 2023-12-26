@@ -29,6 +29,7 @@
 #include "../command/Topic.hpp"
 #include "../command/Quit.hpp"
 #include "../command/Mode.hpp"
+#include "../command/Ping.hpp"
 #include "Channel.hpp"
 
 class Server {
