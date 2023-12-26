@@ -30,7 +30,6 @@ Nick::~Nick()
 */
 void Nick::execute()
 {
-    // PASSWORD 충족 못하면? 우선순위 어덕하지
     if (!user.getPass()) {
         Communicate::sendToClient(user.getFd(), "비밀번호 입력이 되어있지 않습니다!");
         return;

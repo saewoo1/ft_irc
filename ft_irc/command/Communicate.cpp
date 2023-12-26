@@ -17,20 +17,7 @@ void Communicate::generateWarnMessage(UserInfo user, std::string errCode, std::s
     sendToClient(user.getFd(), result);
 }
 
-/**
- * 실패 양식 - 알 수 없는 커맨드일 경우
- * :서버명 에러코드 닉네임 :커맨드 :에러메세지
- * 
- * 실패 양식 - 
-*/
 void Communicate::sendMessage(UserInfo user, std::string errCode, std::string cmd, std::string result) {
     std::string message = ":" + user.getHostName() + " " + errCode + " " + user.getNickName() + " :" + cmd + " :" + result;
     sendToClient(user.getFd(), message);
 }
-
-
-/**
- *  NICK ajfj
-    :10.31.4.5 433 ajfj :NICK :Nickname is already in use
- *  에러메세지 정형화 시키기 
-*/
