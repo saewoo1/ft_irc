@@ -6,7 +6,19 @@ Quit::Quit(Message *msg, UserInfo &user, std::map<std::string, Channel> &allChan
 
 void Quit::execute() {
 	// 일단 호출자에게 Error ~ 메세지 출력
-	std::string result = "ERROR :Closing Link:" + user.getHostName(); + " (Quit:" + getTrailing() + ")";
+	std::string trailing = "";
+
+	std::istringstream iss(this->getOriginalMsg());
+	std::string command, rest;
+	std::getline(iss, command, ':');
+	std::getline(iss, rest);
+
+	if (rest != "")
+		trailing = rest;
+	else 
+		 trailing = "leaving";
+	std::string result = "ERROR :Closing Link:" + user.getHostName() + " (Quit:" + trailing + ")";
+
 	Communicate::sendToClient(user.getFd(), result);
 
 	// 채널 내의 모든 유저들에게 떠난다는 메세지 보내기
@@ -30,7 +42,7 @@ void Quit::execute() {
 				if (userInChat.getFd() == user.getFd()) {
 					continue;
 				}
-				std::string bye = ":" + user.getNickName() + "!" + user.getUserName() + "@" + user.getHostName() + " PART " + channelName + " :" + getTrailing();
+				std::string bye = ":" + user.getNickName() + "!" + user.getUserName() + "@" + user.getHostName() + " PART " + channelName + " :" + trailing;
 				Communicate::sendToClient(userInChat.getFd(), bye);
 			}
 		}
