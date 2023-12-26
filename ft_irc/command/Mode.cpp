@@ -206,6 +206,8 @@ void Mode::executeKey(std::string mode)
             std::string msg = ":" + this->user.getServerName() + " 467 " + this->user.getNickName() + " " + \
                                 this->channel->getName() + " :Channel key already set\n";
             Communicate::sendToClient(this->user.getFd(), msg);
+            this->paramIndex++;
+            return ;
         }
         this->paramIndex++;
         return ;
@@ -381,7 +383,7 @@ void Mode::sendMsg()
 		std::string msg = ":" + this->user.getNickName() + "!" + userInfo.getHostName() + "@" + userInfo.getServerName() + \
                     " MODE " + this->channel->getName() + str;
 
-		Communicate::sendToClient(this->user.getFd(), msg);
+		Communicate::sendToClient(userInfo.getFd(), msg);
 	}
 }
 
