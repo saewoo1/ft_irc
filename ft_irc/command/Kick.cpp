@@ -11,7 +11,7 @@ void Kick::execute()
     }
     //파라미터가 있는지
     if (this->getParameters().size() < 2) {
-		std::string msg = ":" + this->user.getNickName() + " 461 KICK :Not enough parameters\n";
+		std::string msg = ":" + this->user.getNickName() + " 461 KICK :Not enough parameters";
 		Communicate::sendToClient(this->user.getFd(), msg);
 		return ;
 	}
@@ -42,7 +42,6 @@ void Kick::execute()
     if (this->getTrailing().length() >= 1) {
         msg += " :" + this->getTrailing();
     }
-    msg += "\n";
 
     Communicate::sendToClient(this->kickUser->getFd(), msg);
 }
@@ -60,7 +59,7 @@ bool Kick::isPresentKickUser(std::string &kickName)
 
     if (it == this->userList.end()) {
         std::string msg = ":" + this->user.getHostName() + " 401 " + this->user.getNickName() + " :INVITE " + \
-                        ":" + kickName + " :No such nick/channel\n";
+                        ":" + kickName + " :No such nick/channel";
         Communicate::sendToClient(this->user.getFd(), msg);
     }
     return false;
@@ -71,7 +70,7 @@ bool Kick::isPresentChannel(std::string &channelName)
     std::map<std::string, Channel>::iterator it = this->channelList.find(channelName);
 
 	if (it == this->channelList.end()) {
-		std::string msg = ":" + this->user.getServerName() + " 403 " + channelName + " :No such channel\n";
+		std::string msg = ":" + this->user.getServerName() + " 403 " + channelName + " :No such channel";
 		Communicate::sendToClient(this->user.getFd(), msg);
 		return false;
 	}
@@ -84,7 +83,7 @@ bool Kick::isUserInKickChannel()
     std::map<std::string, UserInfo>::iterator it = this->kickChannel->users.find(this->user.getNickName());
 
     if (it == this->kickChannel->users.end()) {
-        std::string msg = ":" + this->user.getServerName() + " 442 " + this->user.getNickName() + " " + this->kickChannel->getName() + " :You're not on that channel\n";
+        std::string msg = ":" + this->user.getServerName() + " 442 " + this->user.getNickName() + " " + this->kickChannel->getName() + " :You're not on that channel";
         Communicate::sendToClient(this->user.getFd(), msg);
         return false;
     }
@@ -96,7 +95,7 @@ bool Kick::isKickUserInKickChannel()
     std::map<std::string, UserInfo>::iterator it = this->kickChannel->users.find(this->kickUser->getNickName());
 
     if (it == this->kickChannel->users.end()) {
-        std::string msg = ":" + this->user.getServerName() + " 441 " + this->kickUser->getNickName() + " " + this->kickChannel->getName() + " :They aren't on that channel\n";
+        std::string msg = ":" + this->user.getServerName() + " 441 " + this->kickUser->getNickName() + " " + this->kickChannel->getName() + " :They aren't on that channel";
         Communicate::sendToClient(this->user.getFd(), msg);
         return false;
     }
@@ -107,7 +106,7 @@ bool Kick::isOperator()
 {
     std::map<std::string, UserInfo>::iterator it = this->kickChannel->operators.find(this->user.getNickName());
     if (it == this->kickChannel->operators.end()) {
-        std::string msg = ":" + this->user.getServerName() + " 482 " + this->user.getNickName() + " " + this->kickChannel->getName() + " :You're not channel operator\n";
+        std::string msg = ":" + this->user.getServerName() + " 482 " + this->user.getNickName() + " " + this->kickChannel->getName() + " :You're not channel operator";
         Communicate::sendToClient(this->user.getFd(), msg);
         return false;
     }

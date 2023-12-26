@@ -17,7 +17,7 @@ int Join::validateJoinExecute(const std::string &channelName, const std::string 
     if (it == channelList.end()) {
         if (channelName[0] != '#') {
 			std::string msg = ":" + this->user.getServerName() + " 403 " + this->user.getNickName() + " :JOIN :" + channelName + \
-							" No such channel\n";
+							" No such channel";
 			Communicate::sendToClient(this->user.getFd(), msg);
             return 1;
         }
@@ -38,11 +38,11 @@ void Join::createNewChannel(std::string channelName)
 
     this->user.channels.insert(std::make_pair(newChannel.getName(), true));
     std::string msg = ":" + this->user.getNickName() + "!" + this->user.getUserName() + "@" + this->user.getServerName() + \
-                    " " + "JOIN :" + newChannel.getName() + "\n";
+                    " " + "JOIN :" + newChannel.getName();
     msg += ":" + this->user.getServerName() + " 353 " + this->user.getNickName() + " = " + newChannel.getName() + \
-				" :@" + this->user.getNickName() + "\n";
+				" :@" + this->user.getNickName();
 	msg += ":" + this->user.getServerName() + " 366 " + this->user.getNickName() + " " + newChannel.getName() + \
-				" :End of NAMES list\n";
+				" :End of NAMES list";
 	
 	Communicate::sendToClient(this->user.getFd(), msg);
 }
@@ -54,7 +54,7 @@ void Join::joinChannel(std::string channelName, const std::string &password)
 
 	std::map<std::string, bool>::iterator userIter = this->user.channels.find(channelName);
 	if (userIter != this->user.channels.end()) {
-		std::string msg = ":" + this->user.getServerName() + " 443 " + this->user.getNickName() + " " + channelName + " :is already on channel\n";
+		std::string msg = ":" + this->user.getServerName() + " 443 " + this->user.getNickName() + " " + channelName + " :is already on channel";
 		Communicate::sendToClient(this->user.getFd(), msg);
 		return ;
 	}
@@ -69,7 +69,7 @@ void Join::joinChannel(std::string channelName, const std::string &password)
 		}
 
 		std::string msg = ":" + this->user.getNickName() + "!" + this->user.getUserName() + "@" + this->user.getServerName() + \
-						+ " Join :" + this->existed->getName() + "\n";
+						+ " Join :" + this->existed->getName();
 		msg += "353 " + this->user.getNickName() + "=" + this->existed->getName() + ":";
 		for (std::map<std::string, UserInfo>::iterator it = this->existed->users.begin(); it != this->existed->users.end(); it++) {
 			UserInfo userInfo = it->second;
@@ -81,7 +81,7 @@ void Join::joinChannel(std::string channelName, const std::string &password)
 			}
 		}
 		msg += "\n";
-		msg += "366" + this->user.getNickName() + " " + this->existed->getName() + " :End of NAMES list\n";
+		msg += "366" + this->user.getNickName() + " " + this->existed->getName() + " :End of NAMES list";
 
 		Communicate::sendToClient(this->user.getFd(), msg);
 		for (std::map<std::string, UserInfo>::iterator it = this->existed->users.begin(); it != this->existed->users.end(); it++) {
@@ -91,7 +91,7 @@ void Join::joinChannel(std::string channelName, const std::string &password)
 				continue;
 			}
 			std::string msg = ":" + this->user.getNickName() + "!" + this->user.getUserName() + "@" + this->user.getServerName() + \
-							" Join :" + this->existed->getName() + "\n";
+							" Join :" + this->existed->getName();
 			Communicate::sendToClient(userInfo.getFd(), msg);
 		}
 	}
@@ -132,7 +132,7 @@ void Join::execute() {
 	std::string password;
 
 	if (this->getParameters().size() < 1) {
-		std::string msg = ":" + this->user.getNickName() + " 461 JOIN :Not enough parameters\n";
+		std::string msg = ":" + this->user.getNickName() + " 461 JOIN :Not enough parameters";
 		Communicate::sendToClient(this->user.getFd(), msg);
 		return ;
 	}

@@ -10,12 +10,12 @@ void Part::execute()
         return ;
     }
     if (this->getParameters().size() < 1) {
-		std::string msg = ":" + this->user.getNickName() + " 461 PART :Not enough parameters\n";
+		std::string msg = ":" + this->user.getNickName() + " 461 PART :Not enough parameters";
 		Communicate::sendToClient(this->user.getFd(), msg);
 		return ;
 	}
     if (!isPresentChannel(this->getParameters().at(0))) {
-        std::string msg = ":" + user.getHostName() + " 403 " + user.getNickName() + " " + getParameters().at(0) + " :No such channel\n";
+        std::string msg = ":" + user.getHostName() + " 403 " + user.getNickName() + " " + getParameters().at(0) + " :No such channel";
         Communicate::sendToClient(this->user.getFd(), msg);
         return ;
     }
@@ -43,12 +43,12 @@ void Part::partUser(std::string &channelName)
 
     std::string msg;
     if (this->getTrailing().empty()) {
-        msg = ":" + this->user.getNickName() + "!" + this->user.getUserName() + "@" + this->user.getServerName() + "PART " + channelName + "\n";
+        msg = ":" + this->user.getNickName() + "!" + this->user.getUserName() + "@" + this->user.getServerName() + "PART " + channelName;
         Communicate::sendToClient(this->user.getFd(), msg);
     } else {
         std::string partMsg = this->getTrailing();
         msg = ":" + this->user.getNickName() + "!" + this->user.getUserName() + "@" + this->user.getServerName() + "PART " + channelName + \
-                            " :" + partMsg + "\n";
+                            " :" + partMsg;
         Communicate::sendToClient(this->user.getFd(), msg);
     }
     partChannel = &(this->channelList.find(channelName))->second;
@@ -66,7 +66,7 @@ int Part::earseChannelInUser(std::string &channelName)
         }
     }
 
-    std::string msg = ":" + this->user.getHostName() + " 442 " + this->user.getNickName() + " " + channelName + " :You're not on that channel\n";
+    std::string msg = ":" + this->user.getHostName() + " 442 " + this->user.getNickName() + " " + channelName + " :You're not on that channel";
     Communicate::sendToClient(this->user.getFd(), msg);
     return 0;
 }

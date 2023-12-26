@@ -12,7 +12,7 @@ void Invite::execute()
     
     // INVITE 닉네임, 채널명이 아닐경우 예외 처리
     if (this->getParameters().size() != 2) {
-		std::string msg = ":" + this->user.getNickName() + " 461 INVITE :Not enough parameters\n";
+		std::string msg = ":" + this->user.getNickName() + " 461 INVITE :Not enough parameters";
 		Communicate::sendToClient(this->user.getFd(), msg);
 		return ;
 	}
@@ -38,12 +38,12 @@ void Invite::execute()
 	// 체널 invite에 guest를 넣고 341 반환, 초대받는 대상에게는 메시지 반환
 	this->channel->invite.insert(std::make_pair(this->getParameters().at(0), *this->guest));
 	std::string msg = ":" + this->user.getHostName() + " 341 " + this->user.getNickName() + " " + this->getParameters().at(0) + \
-				" " + this->getParameters().at(1) + "\n";
+				" " + this->getParameters().at(1);
 	Communicate::sendToClient(this->user.getFd(), msg); 
 
 	msg.clear();
 	msg += ":" + this->user.getNickName() + "!" + this->guest->getNickName() + "@" + this->user.getServerName() + " INVITE " \
-			+ this->guest->getNickName() + " :" + this->getParameters().at(1) + "\n";
+			+ this->guest->getNickName() + " :" + this->getParameters().at(1);
 	Communicate::sendToClient(this->guest->getFd(), msg);
 }
 
@@ -60,7 +60,7 @@ bool Invite::isPresentGeust(std::string &guestName)
 
     if (it == this->userList.end()) {
         std::string msg = ":" + this->user.getHostName() + " 401 " + this->user.getNickName() + " :INVITE " + \
-                        ":" + guestName + " :No such nick/channel\n";
+                        ":" + guestName + " :No such nick/channel";
         Communicate::sendToClient(this->user.getFd(), msg);
     }
     return false;
@@ -71,7 +71,7 @@ bool Invite::isPresentChannel(std::string &channelName)
     std::map<std::string, Channel>::iterator it = this->channelList.find(channelName);
 
 	if (it == this->channelList.end()) {
-		std::string msg = ":" + this->user.getHostName() + " 403 " + channelName + " :No such channel\n";
+		std::string msg = ":" + this->user.getHostName() + " 403 " + channelName + " :No such channel";
 		Communicate::sendToClient(this->user.getFd(), msg);
 		return false;
 	}
@@ -85,7 +85,7 @@ bool Invite::isGuestInChannel(std::string &guestName)
 
 	std::map<std::string, UserInfo>::iterator it = this->channel->users.find(guestName);
 	if (it != this->channel->users.end()) {
-		std::string msg = ":" + this->user.getHostName() + " 443 " + guestName + " " + this->channel->getName() + " :is already on channel\n";
+		std::string msg = ":" + this->user.getHostName() + " 443 " + guestName + " " + this->channel->getName() + " :is already on channel";
 		Communicate::sendToClient(this->user.getFd(), msg);
 		return false;
 	}
@@ -96,7 +96,7 @@ bool Invite::isOperator()
 {
 	std::map<std::string, UserInfo>::iterator it = this->channel->operators.find(this->user.getNickName());
 	if (it == this->channel->operators.end()) {
-		std::string msg = ":" + this->user.getHostName() + " 481 " + this->channel->getName() + " :Permission Denied- You're not an IRC operator\n";
+		std::string msg = ":" + this->user.getHostName() + " 481 " + this->channel->getName() + " :Permission Denied- You're not an IRC operator";
 		Communicate::sendToClient(this->user.getFd(), msg);
 		return false;
 	}
