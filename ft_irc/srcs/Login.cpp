@@ -71,6 +71,7 @@ Login::Login(UserInfo &userInfo, std::map<int, UserInfo> &allUsers, std::string 
 	if (isValidUserInfo() && userInfo.getNick() == false && userInfo.getActive() == false) {
         userInfo.setActive(true); // 유저 등록
 		generateLoginPage();
+		std::cout << "client " << userInfo.getFd() << " login clear!" << std::endl;
         return;
 	}
 }

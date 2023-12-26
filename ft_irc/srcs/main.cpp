@@ -19,7 +19,7 @@ int main(int ac, char **av) {
 
             if (resultFd > 0) {
                 if (server.pollfds[0].revents && POLLIN) {
-                    std::cout << "client -> server connect" << std::endl;
+                    std::cout << "client -> server connecting...." << std::endl;
                     server.acceptClient();
                     continue;
                 }
@@ -61,9 +61,6 @@ int main(int ac, char **av) {
                                 strBuffer.erase(0, lastCRLFPos + 2);
                             }
                             for (size_t i = 0; i < commands.size(); i++) {
-                                std::cout << "보낸 사람의 fd : " << fd << std::endl;
-                                std::cout << "입력한 메세지 : " << commands[i] << std::endl;
-                                
                                 try {
                                     UserInfo &info = server.getUserInfoByFd(fd);
                                     Command *cmd = server.createCommand(info, commands[i]);

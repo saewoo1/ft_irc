@@ -27,7 +27,7 @@ void Pass::execute()
     if (getParameters().at(0) == password) {
         // 유저의 로그인 성공 표시 on, 서버 측에만 패스워드 맞았다고 출력
         user.checkPass();
-        std::cout << user.getFd() <<" password complete" << std::endl;
+        std::cout << "client " << user.getFd() <<" password complete" << std::endl;
         
     } else {
         Communicate::sendMessage(user, "464", "PASS", "Password incorrect");

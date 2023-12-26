@@ -56,7 +56,6 @@ void Nick::execute()
     if (checkForm()) {
         // 닉네임 최초 등록
         user.setNickName(getParameters()[0]);
-        std::cout << "set nickName compeleted";
     }
 }
 
