@@ -1,7 +1,6 @@
 #include "Server.hpp"
 
 std::vector<std::string> splitByCRLF(std::string &input);
-void ft_quit(Server &server, size_t i);
 
 int main(int ac, char **av) {
     try {
@@ -29,7 +28,7 @@ int main(int ac, char **av) {
                     if (server.pollfds[i].revents == 0) {
                         continue;
                     }
-                    // 이벤트가 존재하지만 끝났거나, 에러가 발생한 케이스라면 해당 클라이언트만 서버로부터 접속을 종료합니다.
+                    // 이벤트가 존재하지만 끝났거나,(^D입력) 에러가 발생한 케이스라면 해당 클라이언트만 서버로부터 접속을 종료합니다.
                     if (server.pollfds[i].revents & POLLHUP || server.pollfds[i].revents & POLLERR) {
                         server.quitServer(i);
                         std::cout << "bye~" << std::endl;
@@ -39,6 +38,7 @@ int main(int ac, char **av) {
                         char buffer[512];
 
                         memset(buffer, 0, sizeof(buffer));
+                        // 소켓으로부터 받은 데이터를 저장합니다.
                         ssize_t recvByte = recv(fd, buffer, sizeof(buffer), 0);
 
                         if (recvByte < 0) {
