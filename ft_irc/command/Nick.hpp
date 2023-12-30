@@ -9,11 +9,12 @@
 class Nick : public Command {
     private:
             UserInfo &user;
-            std::map<int, UserInfo> allUserInfo;
+            std::map<int, UserInfo> &allUserInfo;
             std::string password;
 
             bool checkForm();
             bool isDuplicateNickName();
+            void updateUserNickName();
     public:
             Nick(Message *msg, UserInfo &userInfo, std::map<int, UserInfo> &infoOfUser);
             ~Nick();

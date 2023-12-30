@@ -53,8 +53,18 @@ void Nick::execute()
     }
 
     if (checkForm()) {
-        // 닉네임 최초 등록
-        user.setNickName(getParameters()[0]);
+        // 유저의 닉네임을 업데이트하고, allUserInfo에도 이를 적용한다.
+        updateUserNickName();
+    }
+}
+
+void Nick::updateUserNickName() {
+    std::string newNickName = getParameters()[0];
+    user.setNickName(newNickName);
+
+    std::map<int, UserInfo>::iterator it = allUserInfo.find(user.getFd());
+    if (it != allUserInfo.end()) {
+        it->second.setNickName(newNickName);
     }
 }
 
