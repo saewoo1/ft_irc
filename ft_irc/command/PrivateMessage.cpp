@@ -1,6 +1,6 @@
 #include "PrivateMessage.hpp"
 
-PrivateMessage::PrivateMessage(Message *msg, UserInfo &user, std::map<int, UserInfo> allUserInfo, std::map<std::string, Channel> allChannels) : Command(msg), user(user), allUser(allUserInfo), allChannels(allChannels) {
+PrivateMessage::PrivateMessage(Message *msg, UserInfo &user, std::map<int, UserInfo> &allUserInfo, std::map<std::string, Channel> &allChannels) : Command(msg), user(user), allUser(allUserInfo), allChannels(allChannels) {
 }
 
 bool PrivateMessage::isChannelMsg() {
@@ -20,13 +20,28 @@ bool PrivateMessage::validateChannelMsg() {
 void PrivateMessage::sendChannelMsg() {
     std::string channelName = getParameters().at(0);
     std::map<std::string, Channel>::iterator it = allChannels.find(channelName);
+    Channel &channel = it->second;
 
-    Channel channel = it->second;
-    std::map<std::string, UserInfo> usersInChannel = channel.users; 
+    std::map<std::string, UserInfo> usersInChannel = channel.users;
     std::map<std::string, UserInfo>::iterator userIt = usersInChannel.begin();
+
+    /**
+     * 에러코드 수정해야됨
+    */
+    if (!isInChannel(user, channel)) {
+        Communicate::sendToClient(user.getFd(), "you're not in channel");
+        return ;
+    }
     for (; userIt != usersInChannel.end(); userIt++) {
         Communicate::sendToClient(userIt->second.getFd(), generateSendFormat());
     }
+}
+
+bool PrivateMessage::isInChannel(UserInfo user, Channel channel) {
+    if (channel.users.find(user.getNickName()) == channel.users.end()) {
+        return false;
+    }
+    return true;
 }
 
 void PrivateMessage::execute() {

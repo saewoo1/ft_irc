@@ -188,7 +188,7 @@ Command *Server::createCommand(UserInfo &user, std::string recvStr) {
     if (msg.getCmd() == "PASS")
         cmd = new Pass(&msg, user, password);
     else if (msg.getCmd() == "NICK")
-        cmd = new Nick(&msg, user, users);
+        cmd = new Nick(&msg, user, users, channels);
     else if (msg.getCmd() == "USER")
         cmd = new User(&msg, user);
     else if (msg.getCmd() == "PRIVMSG")

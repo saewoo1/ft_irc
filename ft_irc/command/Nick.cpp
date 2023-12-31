@@ -15,8 +15,26 @@ bool Nick::checkForm()
     return true;
 }
 
-Nick::Nick(Message *msg, UserInfo &userInfo, std::map<int, UserInfo> &infoOfUser) : Command(msg), user(userInfo), allUserInfo(infoOfUser) {
+Nick::Nick(Message *msg, UserInfo &userInfo, std::map<int, UserInfo> &infoOfUser, std::map<std::string, Channel> &channels) : Command(msg), user(userInfo), allUserInfo(infoOfUser), channels(channels) {
 
+}
+
+/**
+ * 1. 모든 채널을 순회한다
+ * 2. 채널 내에서 users를 순회한다.
+ * 3. nickName과 일치한다면, 해당 Channel을 반환한다.
+*/
+bool Nick::isInChannel() {
+    std::map<std::string, Channel>::iterator it = channels.begin();
+
+    // 모든 채널 순회
+    for (; it != channels.end(); it++) {
+        // 채널 내부의 users 중, nickName과 일치하는게 있다면, 해당 NickName은 채널에 속한 유저이다.
+        if (it->second.users.find(user.getNickName()) != it->second.users.end()) {
+            return true;
+        }
+    }
+    return false;
 }
 
 Nick::~Nick()
@@ -43,6 +61,9 @@ void Nick::execute()
     if (user.getActive()) {
         if (!isDuplicateNickName()) {
             // 기존 유저의 닉네임 변경 시 setNick -> true 변환.
+            if (isInChannel()) {
+                updateChannelUser(getParameters().at(0));
+            }
             user.setNick(true);
             user.setNickName(getParameters().at(0));
             Communicate::sendToClient(user.getFd(), "new NickName Set clear!");
@@ -53,8 +74,27 @@ void Nick::execute()
     }
 
     if (checkForm()) {
-        // 유저의 닉네임을 업데이트하고, allUserInfo에도 이를 적용한다.
         updateUserNickName();
+    }
+}
+
+// channels의 channel의 users를 업데이트..;;
+void Nick::updateChannelUser(std::string newNickName) {
+    std::map<std::string, Channel>::iterator it = channels.begin();
+
+    // 모든 채널 순회
+    for (; it != channels.end(); it++) {
+        Channel &channel = it->second;
+        // 채널 내부의 users 중, nickName과 일치하는게 있다면, 해당 NickName은 채널에 속한 유저이다.
+        std::map<std::string, UserInfo>::iterator userIt = channel.users.find(user.getNickName());
+        if (userIt != channel.users.end()) {
+            UserInfo user = userIt->second;
+            user.setNickName(newNickName);
+            channel.users.erase(user.getNickName());
+
+            // 기존의 채널 내의 user 정보를 삭제하고, 새로운 닉네임과 함께 정보를 업데이트합니다.
+            channel.users[newNickName] = user;
+        }
     }
 }
 

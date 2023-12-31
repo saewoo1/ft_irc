@@ -10,8 +10,8 @@
 class PrivateMessage : public Command {
     private:
         UserInfo &user;
-        std::map<int, UserInfo> allUser;
-        std::map<std::string, Channel> allChannels;
+        std::map<int, UserInfo> &allUser;
+        std::map<std::string, Channel> &allChannels;
 
         std::vector<std::string> recipients;
         std::vector<Channel> recipientChannels;
@@ -24,12 +24,14 @@ class PrivateMessage : public Command {
         bool validateChannelMsg();
         void sendChannelMsg();
 
+        bool isInChannel(UserInfo user, Channel channel);
+
 
         int getReceiverFd();
         std::string generateSendFormat();
     public:
-        PrivateMessage(Message *msg, UserInfo &user, std::map<int, UserInfo> allUserInfo, 
-                        std::map<std::string, Channel> allchannels);
+        PrivateMessage(Message *msg, UserInfo &user, std::map<int, UserInfo> &allUserInfo, 
+                        std::map<std::string, Channel> &allchannels);
         void execute();
 };
 

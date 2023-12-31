@@ -58,7 +58,6 @@ public:
     std::string getPassword() const;
     int getSocketFd() const;
     std::string getServerName() const;
-
     //setter
     void setPortNumber(int portNumber);
     void setPassword(std::string password);
