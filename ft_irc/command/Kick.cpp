@@ -36,7 +36,7 @@ void Kick::execute()
         return ;
     }
     this->kickChannel->users.erase(this->kickUser->getNickName());
-    
+    this->kickUser->channels.erase(this->kickChannel->getName());
     std::string msg = ":" + this->user.getNickName() + "!" + this->user.getUserName() + "@" + this->user.getHostName() + " KICK" + \
                     this->kickChannel->getName() + " " + this->kickUser->getNickName();
     if (this->getTrailing().length() >= 1) {

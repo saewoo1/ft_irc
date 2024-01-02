@@ -86,14 +86,33 @@ void Nick::updateChannelUser(std::string newNickName) {
     for (; it != channels.end(); it++) {
         Channel &channel = it->second;
         // 채널 내부의 users 중, nickName과 일치하는게 있다면, 해당 NickName은 채널에 속한 유저이다.
+        std::string oldName = user.getNickName();
         std::map<std::string, UserInfo>::iterator userIt = channel.users.find(user.getNickName());
         if (userIt != channel.users.end()) {
             UserInfo user = userIt->second;
             user.setNickName(newNickName);
-            channel.users.erase(user.getNickName());
+            channel.users.erase(oldName);
 
             // 기존의 채널 내의 user 정보를 삭제하고, 새로운 닉네임과 함께 정보를 업데이트합니다.
-            channel.users[newNickName] = user;
+            channel.users.insert(std::make_pair(newNickName, user));
+        }
+
+        std::map<std::string, UserInfo>::iterator operatorIt = channel.operators.find(oldName);
+        if (operatorIt != channel.operators.end()) {
+            UserInfo user = userIt->second;
+            user.setNickName(newNickName);
+            channel.operators.erase(oldName);
+            // 기존의 채널 내의 user 정보를 삭제하고, 새로운 닉네임과 함께 정보를 업데이트합니다.
+            channel.operators.insert(std::make_pair(newNickName, user));
+        }
+
+        std::map<std::string, UserInfo>::iterator inviteIt = channel.invite.find(oldName);
+        if (inviteIt != channel.invite.end()) {
+            UserInfo user = userIt->second;
+            user.setNickName(newNickName);
+            channel.invite.erase(oldName);
+            // 기존의 채널 내의 user 정보를 삭제하고, 새로운 닉네임과 함께 정보를 업데이트합니다.
+            channel.invite.insert(std::make_pair(newNickName, user));
         }
     }
 }
