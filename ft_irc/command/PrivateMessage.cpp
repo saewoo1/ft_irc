@@ -25,6 +25,11 @@ void PrivateMessage::sendChannelMsg() {
     std::map<std::string, UserInfo> usersInChannel = channel.users;
     std::map<std::string, UserInfo>::iterator userIt = usersInChannel.begin();
 
+
+    std::string msg = ":" + user.getNickName() + "!" + user.getUserName() + "@" + 
+                        user.getServerName() + " PRIVMSG " +  + " " + 
+                            channel.getName() + " :" + getTrailing();
+
     /**
      * 에러코드 수정해야됨
     */
@@ -33,7 +38,9 @@ void PrivateMessage::sendChannelMsg() {
         return ;
     }
     for (; userIt != usersInChannel.end(); userIt++) {
-        Communicate::sendToClient(userIt->second.getFd(), generateSendFormat());
+        if (userIt->second.getFd() != user.getFd()) {
+            Communicate::sendToClient(userIt->second.getFd(), msg);
+        }
     }
 }
 
@@ -59,6 +66,7 @@ void PrivateMessage::execute() {
         Communicate::sendMessage(user, "404", "PRIVMSG", "No such nick/channel");
         return;
     }
+    
     Communicate::sendToClient(getReceiverFd(), generateSendFormat());
 
 }
@@ -74,11 +82,20 @@ int PrivateMessage::getReceiverFd() {
     }
     return -1;
 }
+
 std::string PrivateMessage::generateSendFormat() {
-    std::string result = ":" + getParameters().at(0) + "!"
-            + user.getNickName() + "@" + user.getHostName() + " "
-            + getCmd() + " :" + getTrailing();
-    return result;
+    std::string receiverNickName = "";
+    std::map<int, UserInfo>::iterator it;
+    for (it = allUser.begin(); it != allUser.end(); it++) {
+        if (it->second.getNickName() == getParameters().at(0) && it->second.getActive()) {
+            receiverNickName = it->second.getNickName();
+        }
+    }
+    
+    std::string msg = ":" + user.getNickName() + "!" + user.getUserName() + "@" + 
+        user.getServerName() + " PRIVMSG " +  + " " + 
+            receiverNickName + " :" + getTrailing();
+    return msg;
 }
 
 bool PrivateMessage::validateFormat() {

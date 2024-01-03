@@ -72,7 +72,6 @@ int main(int ac, char **av) {
                                     Command *cmd = server.createCommand(info, commands[i]);
                                     
                                     server.executeCommand(cmd, info);
-
                                 } catch (const std::exception &e) {
                                     std::cerr << e.what() << std::endl;
                                     continue;

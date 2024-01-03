@@ -25,8 +25,6 @@ class PrivateMessage : public Command {
         void sendChannelMsg();
 
         bool isInChannel(UserInfo user, Channel channel);
-
-
         int getReceiverFd();
         std::string generateSendFormat();
     public:
