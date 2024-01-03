@@ -69,7 +69,6 @@ void Nick::execute()
             Communicate::sendToClient(user.getFd(), "new NickName Set clear!");
             return ;
         }
-        Communicate::sendMessage(user, "433", getCmd(), "Nickname is already in use");
         return ;
     }
 

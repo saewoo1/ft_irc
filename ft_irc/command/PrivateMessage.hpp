@@ -13,9 +13,11 @@ class PrivateMessage : public Command {
         std::map<int, UserInfo> &allUser;
         std::map<std::string, Channel> &allChannels;
 
-        std::vector<std::string> recipients;
-        std::vector<Channel> recipientChannels;
-        std::vector<UserInfo> recipientUsers;
+        std::vector<std::string> receivers;
+
+        // 다수의 이름도 처리해야함;
+        void splitComma(std::string params);
+        void sendPersonalMsg();
 
         bool findUserNickName();
         bool validateFormat();
@@ -25,10 +27,7 @@ class PrivateMessage : public Command {
         void sendChannelMsg();
 
         bool isInChannel(UserInfo user, Channel channel);
-
-
         int getReceiverFd();
-        std::string generateSendFormat();
     public:
         PrivateMessage(Message *msg, UserInfo &user, std::map<int, UserInfo> &allUserInfo, 
                         std::map<std::string, Channel> &allchannels);

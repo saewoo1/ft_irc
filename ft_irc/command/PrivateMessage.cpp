@@ -17,6 +17,27 @@ bool PrivateMessage::validateChannelMsg() {
     return (it != allChannels.end()) && (it->second.getUserCount() != 0);
 }
 
+void PrivateMessage::splitComma(std::string params) {
+    size_t commaIdx;
+
+    commaIdx = params.find(',');
+    if (commaIdx == std::string::npos) {
+        receivers.push_back(params);
+        return ;
+    }
+
+    while (commaIdx != std::string::npos) {
+        receivers.push_back(params.substr(0, commaIdx - 1));
+        if (!params[commaIdx + 1] || params[commaIdx + 1] == ',') {
+            return;
+        }
+
+        params = params.substr(commaIdx + 1);
+        commaIdx = params.find(',');
+    }
+    receivers.push_back(params);
+}
+
 void PrivateMessage::sendChannelMsg() {
     std::string channelName = getParameters().at(0);
     std::map<std::string, Channel>::iterator it = allChannels.find(channelName);
@@ -24,6 +45,11 @@ void PrivateMessage::sendChannelMsg() {
 
     std::map<std::string, UserInfo> usersInChannel = channel.users;
     std::map<std::string, UserInfo>::iterator userIt = usersInChannel.begin();
+
+
+    std::string msg = ":" + user.getNickName() + "!" + user.getUserName() + "@" + 
+                        user.getServerName() + " PRIVMSG " +  + " " + 
+                            channel.getName() + " :" + getTrailing();
 
     /**
      * 에러코드 수정해야됨
@@ -33,7 +59,9 @@ void PrivateMessage::sendChannelMsg() {
         return ;
     }
     for (; userIt != usersInChannel.end(); userIt++) {
-        Communicate::sendToClient(userIt->second.getFd(), generateSendFormat());
+        if (userIt->second.getFd() != user.getFd()) {
+            Communicate::sendToClient(userIt->second.getFd(), msg);
+        }
     }
 }
 
@@ -59,8 +87,20 @@ void PrivateMessage::execute() {
         Communicate::sendMessage(user, "404", "PRIVMSG", "No such nick/channel");
         return;
     }
-    Communicate::sendToClient(getReceiverFd(), generateSendFormat());
+    sendPersonalMsg();
+}
 
+void PrivateMessage::sendPersonalMsg() {
+
+    // param을 갖고 Recipients 채우기
+    splitComma(getParameters().at(0));
+    std::map<int, UserInfo>::iterator it = allUser.begin();
+    for (; it != allUser.end(); it++) {
+        std::string msg = ":" + user.getNickName() + "!" + user.getUserName() + "@" + user.getServerName() + " PRIVMSG" +  + " " + it->second.getNickName() + " :" + getTrailing();
+        if (it->second.getFd() != user.getFd()) {
+            Communicate::sendToClient(it->second.getFd(), msg);
+        }
+    }
 }
 
 int PrivateMessage::getReceiverFd() {
@@ -73,12 +113,6 @@ int PrivateMessage::getReceiverFd() {
         }
     }
     return -1;
-}
-std::string PrivateMessage::generateSendFormat() {
-    std::string result = ":" + getParameters().at(0) + "!"
-            + user.getNickName() + "@" + user.getHostName() + " "
-            + getCmd() + " :" + getTrailing();
-    return result;
 }
 
 bool PrivateMessage::validateFormat() {
