@@ -209,8 +209,8 @@ Command *Server::createCommand(UserInfo &user, std::string recvStr) {
         cmd = new Mode(&msg, user, users, channels);
     else if (msg.getCmd() == "PING")
         cmd = new Ping(&msg, user);
-    else
-        Communicate::sendMessage(user, "421", msg.getCmd(), "Unknown command");
+    // else
+    //     Communicate::sendMessage(user, "421", msg.getCmd(), "Unknown command");
     return cmd;
 
 }

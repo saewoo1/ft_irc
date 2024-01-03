@@ -69,7 +69,7 @@ void Join::joinChannel(std::string channelName, const std::string &password)
 		}
 
 		std::string msg = ":" + this->user.getNickName() + "!" + this->user.getUserName() + "@" + this->user.getServerName() + \
-						+ " Join :" + this->existed->getName();
+						+ " Join :" + this->existed->getName() + "\n";
 		msg += "353 " + this->user.getNickName() + "=" + this->existed->getName() + ":";
 		for (std::map<std::string, UserInfo>::iterator it = this->existed->users.begin(); it != this->existed->users.end(); it++) {
 			UserInfo userInfo = it->second;
