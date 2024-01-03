@@ -18,6 +18,9 @@ void Mode::execute()
 		return ;
     }
 
+    if (this->getParameters().at(0)[0] != '#') {
+        return ;
+    }
     //채널이 존재하는지
     if (!isPresentChannel(this->getParameters().at(0))) {
         return ;
