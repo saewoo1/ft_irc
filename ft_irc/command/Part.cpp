@@ -10,7 +10,7 @@ void Part::execute()
         return ;
     }
     if (this->getParameters().size() < 1) {
-		std::string msg = ":" + this->user.getNickName() + " 461 PART :Not enough parameters";
+		std::string msg = "461 " + this->user.getNickName() + " PART :Not enough parameters";
 		Communicate::sendToClient(this->user.getFd(), msg);
 		return ;
 	}
@@ -43,11 +43,11 @@ void Part::partUser(std::string &channelName)
 
     std::string msg;
     if (this->getTrailing().empty()) {
-        msg = ":" + this->user.getNickName() + "!" + this->user.getUserName() + "@" + this->user.getServerName() + "PART " + channelName;
+        msg = ":" + this->user.getNickName() + "!" + this->user.getUserName() + "@" + this->user.getServerName() + " PART :" + this->getParameters().back();
         Communicate::sendToClient(this->user.getFd(), msg);
     } else {
         std::string partMsg = this->getTrailing();
-        msg = ":" + this->user.getNickName() + "!" + this->user.getUserName() + "@" + this->user.getServerName() + "PART " + channelName + \
+        msg = ":" + this->user.getNickName() + "!" + this->user.getUserName() + "@" + this->user.getServerName() + " PART " + channelName + \
                             " :" + partMsg;
         Communicate::sendToClient(this->user.getFd(), msg);
     }
@@ -79,7 +79,7 @@ void Part::earseUserInUserInfo(std::string &channelName)
             for (std::map<std::string, UserInfo>::iterator it = part->users.begin(); it != part->users.end(); it++) {
                 if (it->first == this->user.getNickName()) {
                     std::string name = it->first;
-                    part->users.erase(name);
+                    part->users.erase(it);
                     part->operators.erase(name);
                     return ;
                 }

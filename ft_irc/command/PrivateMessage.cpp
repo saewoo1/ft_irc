@@ -56,8 +56,8 @@ void PrivateMessage::execute() {
     }
    
     if (getReceiverFd() == -1) {
-    Communicate::sendMessage(user, "404", "PRIVMSG", "No such nick/channel");
-    return;
+        Communicate::sendMessage(user, "404", "PRIVMSG", "No such nick/channel");
+        return;
     }
     Communicate::sendToClient(getReceiverFd(), generateSendFormat());
 

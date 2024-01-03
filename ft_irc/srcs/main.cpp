@@ -60,31 +60,18 @@ int main(int ac, char **av) {
                             if (lastCRLFPos != std::string::npos) {
                                 strBuffer.erase(0, lastCRLFPos + 2);
                             }
+
                             for (size_t i = 0; i < commands.size(); i++) {
+                                
+                                std::cout << "보낸 사람 fd : " << fd << std::endl;
+                                std::cout << "들어온 메세지 : " << commands[i] << std::endl;
+                                
                                 try {
+
                                     UserInfo &info = server.getUserInfoByFd(fd);
                                     Command *cmd = server.createCommand(info, commands[i]);
                                     
                                     server.executeCommand(cmd, info);
-                                    /**
-                                     * 아래는 업데이트 내역을 확인하는 출력부~
-                                    */
-                                    // std::map<int, UserInfo>::iterator userIt = server.users.begin();
-                                    // for (; userIt != server.users.end(); userIt++) {
-                                    //     std::cout << "serverNickName?? : " << userIt->second.getNickName() << std::endl;
-                                    // }
-                                    // std::map<std::string, Channel>::iterator chIt = server.channels.begin();
-                                    // for (; chIt != server.channels.end(); chIt++) {
-                                    //     Channel &chnnel = chIt->second;
-                                    //     std::cout << "Channel Name : " << chnnel.getName() << std::endl;
-                                        
-                                    //     std::map<std::string, UserInfo>::iterator nameIt = chnnel.users.begin();
-                                    //     for (; nameIt != chnnel.users.end(); nameIt++) {
-                                    //         std::cout << "channel in user name first: " << nameIt->first << std::endl;
-                                    //         std::cout << "channel in user name second: " << nameIt->second.getNickName() << std::endl;
-                                    //     }
-
-                                    // }
 
                                 } catch (const std::exception &e) {
                                     std::cerr << e.what() << std::endl;

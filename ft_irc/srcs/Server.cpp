@@ -184,7 +184,7 @@ void Server::acceptClient() {
 Command *Server::createCommand(UserInfo &user, std::string recvStr) {
     Message msg(user.getFd(), recvStr);
     Command *cmd = 0;
-
+    std::cout << "msg = " << msg.getCmd() << std::endl;
     if (msg.getCmd() == "PASS")
         cmd = new Pass(&msg, user, password);
     else if (msg.getCmd() == "NICK")
@@ -219,7 +219,7 @@ void Server::executeCommand(Command *cmd, UserInfo &info) {
     if (cmd) {
         cmd->execute();
 
-        if (cmd->getCmd() == "NICK" || cmd->getCmd() == "USER") {
+        if (!info.getActive() && (cmd->getCmd() == "NICK" || cmd->getCmd() == "USER")) {
             Login(info, users, getServerName());
         }
 

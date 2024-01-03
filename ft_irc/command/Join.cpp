@@ -8,7 +8,7 @@ int Join::validateJoinExecute(const std::string &channelName, const std::string 
 {
     if (this->user.channels.size() >= 10) {
         std::string waring = ":" + this->user.getHostName() + "405" + this->user.getNickName() + " " + channelName + \
-                                " : You have so many Channels! you're so mean";
+                                " :You have joined too many channels";
         Communicate::sendToClient(this->user.getFd(), waring);
         return 1;
     }
@@ -38,9 +38,9 @@ void Join::createNewChannel(std::string channelName)
 
     this->user.channels.insert(std::make_pair(newChannel.getName(), true));
     std::string msg = ":" + this->user.getNickName() + "!" + this->user.getUserName() + "@" + this->user.getServerName() + \
-                    " " + "JOIN :" + newChannel.getName();
+                    " " + "JOIN :" + newChannel.getName() + "\n";
     msg += ":" + this->user.getServerName() + " 353 " + this->user.getNickName() + " = " + newChannel.getName() + \
-				" :@" + this->user.getNickName();
+				" :@" + this->user.getNickName() + "\n";
 	msg += ":" + this->user.getServerName() + " 366 " + this->user.getNickName() + " " + newChannel.getName() + \
 				" :End of NAMES list";
 	
@@ -101,22 +101,22 @@ bool Join::checkJoinConditions(const std::string &password)
 {
 	if (this->existed->getLimitMode() && \
 		this->existed->getLimit() <= static_cast<long long>(this->existed->users.size())) {
-			std::string msg = ":" + this->user.getHostName() + " 471" + this->user.getNickName() + " " + this->existed->getName() + \
+			std::string msg = ":" + this->user.getHostName() + " 471 " + this->user.getNickName() + " " + this->existed->getName() + \
 						" :Cannot join channel (+l)";
 		Communicate::sendToClient(this->user.getFd(), msg);		
     	return false;
 	}
 
 	if ((this->existed->getKeyMode() && password.empty()) || (this->existed->getKeyMode() && password != this->existed->getKey())) {
-		std::string msg = ":" + this->user.getHostName() + " 475" + this->user.getNickName() + " " + this->existed->getName() + \
+		std::string msg = ":" + this->user.getHostName() + " 475 " + this->user.getNickName() + " " + this->existed->getName() + \
 						" :Cannot join channel (+k)";
 		Communicate::sendToClient(this->user.getFd(), msg);
 		return false;
 	}
 
 	if (this->existed->getInviteMode() && this->existed->invite.find(this->user.getNickName()) == this->existed->invite.end()) {
-		std::string msg = ":" + this->user.getHostName() + " 473" + this->user.getNickName() + " " + this->existed->getName() + \
-						":Cannot join channel (+i)";
+		std::string msg = ":" + this->user.getHostName() + " 473 " + this->user.getNickName() + " " + this->existed->getName() + \
+						" :Cannot join channel (+i)";
 		Communicate::sendToClient(this->user.getFd(), msg);
 		return false;
 	}
