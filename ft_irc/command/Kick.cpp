@@ -37,13 +37,18 @@ void Kick::execute()
     }
     this->kickChannel->users.erase(this->kickUser->getNickName());
     this->kickUser->channels.erase(this->kickChannel->getName());
-    std::string msg = ":" + this->user.getNickName() + "!" + this->user.getUserName() + "@" + this->user.getHostName() + " KICK" + \
-                    this->kickChannel->getName() + " " + this->kickUser->getNickName();
+    std::string msg = ":" + this->user.getNickName() + "!" + this->user.getUserName() + "@" + this->user.getServerName() + " KICK " + \
+                    this->kickChannel->getName() + " " + this->kickUser->getNickName() + " :";
     if (this->getTrailing().length() >= 1) {
-        msg += " :" + this->getTrailing();
+        msg += this->getTrailing();
     }
+    std::string partMsg = ":" + this->kickUser->getNickName() + "!" + this->kickUser->getUserName() + "@" + this->kickUser->getServerName() + " PART " + this->kickChannel->getName();
 
+    Communicate::sendToClient(this->kickUser->getFd(), partMsg);
     Communicate::sendToClient(this->kickUser->getFd(), msg);
+    for (std::map<std::string, UserInfo>::iterator it = this->kickChannel->users.begin(); it != this->kickChannel->users.end(); it++) {
+        Communicate::sendToClient(it->second.getFd(), msg);
+    }
 }
 
 bool Kick::isPresentKickUser(std::string &kickName)
@@ -58,8 +63,7 @@ bool Kick::isPresentKickUser(std::string &kickName)
     }
 
     if (it == this->userList.end()) {
-        std::string msg = ":" + this->user.getHostName() + " 401 " + this->user.getNickName() + " :INVITE " + \
-                        ":" + kickName + " :No such nick/channel";
+        std::string msg = ":" + this->user.getServerName() + " 401 " + this->user.getNickName() + " " + this->user.getRealName() + " :No such nick";
         Communicate::sendToClient(this->user.getFd(), msg);
     }
     return false;
