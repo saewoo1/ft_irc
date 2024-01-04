@@ -52,6 +52,12 @@ void Join::joinChannel(std::string channelName, const std::string &password)
 	std::map<std::string, Channel>::iterator it = this->channelList.find(channelName);
 	this->existed = &it->second;
 
+	Channel &channel = it->second;
+	if (!channel.getTopic().empty()) {
+		std::string result = ":" + user.getHostName() + " 332 " + user.getNickName() + " " + channel.getName() + " :" + channel.getTopic();
+		Communicate::sendToClient(user.getFd(), result);
+	}
+
 	std::map<std::string, bool>::iterator userIter = this->user.channels.find(channelName);
 	if (userIter != this->user.channels.end()) {
 		std::string msg = ":" + this->user.getServerName() + " 443 " + this->user.getNickName() + " " + channelName + " :is already on channel";

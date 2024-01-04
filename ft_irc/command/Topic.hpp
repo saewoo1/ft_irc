@@ -17,7 +17,7 @@ class Topic : public Command {
         bool isUserInChannel();
         bool isTopicModeOn(Channel channel);
         bool isDuplicateTopic(Channel channel);
-        void updateTopic(Channel channel);
+        void updateTopic(Channel &channel);
         void showChannelTopic(Channel channel);
 
     public:

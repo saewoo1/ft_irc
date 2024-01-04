@@ -72,6 +72,19 @@ int main(int ac, char **av) {
                                     Command *cmd = server.createCommand(info, commands[i]);
                                     
                                     server.executeCommand(cmd, info);
+
+                                    /**
+                                     * 아래는 업데이트 내역을 확인하는 출력부~
+                                    */
+                                    std::map<int, UserInfo>::iterator userIt = server.users.begin();
+                                    for (; userIt != server.users.end(); userIt++) {
+                                        std::cout << "serverNickName?? : " << userIt->second.getNickName() << std::endl;
+                                    }
+                                    std::map<std::string, Channel>::iterator chIt = server.channels.begin();
+                                    for (; chIt != server.channels.end(); chIt++) {
+                                        Channel &chnnel = chIt->second;
+                                        std::cout << "Channel Topic : " << chnnel.getTopic() << std::endl;
+                                    }
                                 } catch (const std::exception &e) {
                                     std::cerr << e.what() << std::endl;
                                     continue;

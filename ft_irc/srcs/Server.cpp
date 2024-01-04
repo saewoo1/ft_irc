@@ -184,7 +184,6 @@ void Server::acceptClient() {
 Command *Server::createCommand(UserInfo &user, std::string recvStr) {
     Message msg(user.getFd(), recvStr);
     Command *cmd = 0;
-    std::cout << "msg = " << msg.getCmd() << std::endl;
     if (msg.getCmd() == "PASS")
         cmd = new Pass(&msg, user, password);
     else if (msg.getCmd() == "NICK")
