@@ -55,7 +55,7 @@ void Topic::showChannelTopic(Channel channel) {
  * 변경 시점 updateTopic 하는 순간 channel의 topic은 무조건 trailing임.
  * setTopic을 한 후에 들어온 user들은 어떻게 하지?
 */
-void Topic::updateTopic(Channel channel) {
+void Topic::updateTopic(Channel &channel) {
     channel.setTopic(getTrailing());
     std::map<std::string, UserInfo>::iterator it = channel.users.begin();
 

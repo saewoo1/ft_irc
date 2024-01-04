@@ -78,7 +78,6 @@ void UserInfo::checkActive()
 // 유저측에서 Name을 갖고 fd값을 반환?
 int UserInfo::getFdByName(std::string nickName) {
     if (nickName == userName) {
-        std::cout << nickName << std::endl;
         return fd;
     }
     return -1;
