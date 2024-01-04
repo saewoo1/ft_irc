@@ -15,6 +15,7 @@ class Login {
 
 		std::string serverName;
 		bool isEmpty();
+		bool isAllPass();
 		bool isDuplicateNick();
         bool isValidUserInfo();
 		void generateLoginPage();
