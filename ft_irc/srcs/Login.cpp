@@ -10,8 +10,6 @@
  * @return
  */
 bool Login::isValidUserInfo() {
-	// USER -> userName(필수) : trailing
-    // NICK -> nickname
 	if (userInfo.getNickName().empty() || userInfo.getUserName().empty()) {
 		return false;
 	}
@@ -68,10 +66,9 @@ void Login::generateLoginPage() {
 
 Login::Login(UserInfo &userInfo, std::map<int, UserInfo> &allUsers, std::string serverName) : userInfo(userInfo), allUsers(allUsers), serverName(serverName) {
 	// 단순 닉네임 변경사항이라면, 접속 성공 띄우지 마셈
-	if (isValidUserInfo() && userInfo.getNick() == false && userInfo.getActive() == false) {
+	if (isValidUserInfo() && !userInfo.getNick() && !userInfo.getActive()) {
         userInfo.setActive(true); // 유저 등록
 		generateLoginPage();
-		std::cout << "client " << userInfo.getFd() << " login clear!" << std::endl;
         return;
 	}
 }

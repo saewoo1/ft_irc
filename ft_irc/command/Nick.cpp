@@ -3,9 +3,7 @@
 bool Nick::checkForm()
 {
     if (getParameters()[0].size() > 10) {
-        std::string warning = ":" + user.getHostName() + " 432 " + getParameters().at(0) + " :Error nickname";
-
-        //에러 메세지 user의 fd값으로 보내는 함수 작성하기
+        std::string warning = ":" + user.getHostName() + " 432 " + getParameters().at(0) + " :Erroneus nickname";
         Communicate::sendToClient(user.getFd(), warning);
         return false;
     }
@@ -49,7 +47,6 @@ Nick::~Nick()
 void Nick::execute()
 {
     if (!user.getPass()) {
-        Communicate::sendToClient(user.getFd(), "비밀번호 입력이 되어있지 않습니다!");
         return;
     }
 
@@ -67,7 +64,6 @@ void Nick::execute()
             }
             user.setNick(true);
             user.setNickName(getParameters().at(0));
-            Communicate::sendToClient(user.getFd(), "new NickName Set clear!");
             return ;
         }
         return ;
@@ -132,8 +128,10 @@ bool Nick::isDuplicateNickName() {
     for (it = allUserInfo.begin(); it != allUserInfo.end(); it++) {
         // 입력한 닉네임과, 기존에 로그인이 성공한 닉네임이 겹친다면..
         if ((it->second.getNickName() == getParameters().at(0)) && it->second.getActive()) {
-            std::string result = ":" + user.getServerName() + " 436 " + user.getUserName() + ":" + getCmd() + ":Nickname collision";
-            Communicate::sendToClient(user.getFd(), result);
+            // std::string msg = ":" + user.getHostName() + " 436 " + user.getNickName() + " :Nickname collision KILL";
+
+            std::string msg = ":" + user.getHostName() + " 433 " + getParameters().at(0) + " " + getParameters().at(0) + " :Nickname is already in use";
+            Communicate::sendToClient(user.getFd(), msg);
             return true;
         }
     }
