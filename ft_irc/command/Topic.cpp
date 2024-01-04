@@ -61,7 +61,7 @@ void Topic::updateTopic(Channel channel) {
 
     for (; it != channel.users.end(); it++) {
         UserInfo userInChannel = it->second;
-        std::string msg = ":" + userInChannel.getNickName() + "!" + userInChannel.getUserName() + "@" + user.getHostName() + " TOPIC " + channel.getName() + " :" + getTrailing();
+        std::string msg = ":" + user.getNickName() + "!" + userInChannel.getUserName() + "@" + user.getHostName() + " TOPIC " + channel.getName() + " :" + getTrailing();
         Communicate::sendToClient(userInChannel.getFd(), msg);
     }
 }
@@ -99,7 +99,7 @@ bool Topic::isOperator(Channel channel) {
 bool Topic::isTopicModeOn(Channel channel) {
 
     if (!channel.getTopicMode() || !isOperator(channel)) {
-        std::string msg = ":" + user.getHostName() + " 482 " + user.getNickName() + " " + channel.getName() + ": You do not have access to change the topic on this channel";
+        std::string msg = ":" + user.getHostName() + " 482 " + user.getNickName() + " " + channel.getName() + " :You do not have access to change the topic on this channel";
         return false;
     }
     return true;

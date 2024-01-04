@@ -50,7 +50,11 @@ void Join::createNewChannel(std::string channelName)
 void Join::joinChannel(std::string channelName, const std::string &password)
 {
 	std::map<std::string, Channel>::iterator it = this->channelList.find(channelName);
+	// 채널 리스트에서 채널을 찾아온 뒤, topic이 존재한다면 같이 set 넣어줘야함
 	this->existed = &it->second;
+	if (!it->second.getTopic().empty()) {
+		this->existed->setTopic(it->second.getTopic());
+	}
 
 	std::map<std::string, bool>::iterator userIter = this->user.channels.find(channelName);
 	if (userIter != this->user.channels.end()) {
