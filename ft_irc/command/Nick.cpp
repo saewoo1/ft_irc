@@ -3,7 +3,7 @@
 bool Nick::checkForm()
 {
     if (getParameters()[0].size() > 10) {
-        std::string warning = "432 " + getParameters().at(0) + " :Error nickname";
+        std::string warning = ":" + user.getHostName() + " 432 " + getParameters().at(0) + " :Error nickname";
 
         //에러 메세지 user의 fd값으로 보내는 함수 작성하기
         Communicate::sendToClient(user.getFd(), warning);
@@ -54,7 +54,8 @@ void Nick::execute()
     }
 
     if (getParameters().size() < 1) {
-        Communicate::sendMessage(user, "431", getCmd(), "No nickname given");
+        std::string msg = ":" + user.getHostName() + " 431 :No nickname given";
+        Communicate::sendToClient(user.getFd(), msg);
         return ;
     }
     
