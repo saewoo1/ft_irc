@@ -12,10 +12,13 @@ class Topic : public Command {
         std::map<std::string, Channel> &channels;
 
         bool isExistTopic();
+        bool isOperator(Channel channel);
         bool isValidChannel(); // 채널이 존재하는지 검증
-        bool checkTopic(std::string name);
-        void updateTopic(std::string name);
-        void showChannelTopic();
+        bool isUserInChannel();
+        bool isTopicModeOn(Channel channel);
+        bool isDuplicateTopic(Channel channel);
+        void updateTopic(Channel channel);
+        void showChannelTopic(Channel channel);
 
     public:
         Topic(Message *msg, UserInfo &user, std::map<std::string, Channel> &channels);

@@ -5,12 +5,21 @@ Topic::Topic(Message *msg, UserInfo &user, std::map<std::string, Channel> &chann
 
 // 실제로 존재하는 채널인지 param으로 검증,
 // 중복되는 topic인지 검수하는 기능
-bool Topic::isValidChannel()
-{
+bool Topic::isValidChannel() {
+
+    if (getParameters().size() == 0) {
+        std::string msg = ":" + user.getHostName() + " 461 " + user.getNickName() + " TOPIC :Not enough parameters";
+        Communicate::sendToClient(user.getFd(), msg);
+
+        return false;
+    }
+
     std::string channelName = getParameters().at(0);
     std::map<std::string, Channel>::iterator it = channels.find(channelName);
     if (it == channels.end()) {
-        //:10.31.4.5 403 j :TOPIC :#fjfjfj :No such channel
+       std::string msg = ":" + user.getHostName() + " 403 " + user.getNickName() + " " + channelName + " :No such channel";
+       Communicate::sendToClient(user.getFd(), msg);
+
        return false;
     }
     return true;
@@ -24,60 +33,102 @@ bool Topic::isExistTopic() {
     return true;
 }
 
-bool Topic::checkTopic(std::string topicName) {
-    // 모든 채널을 순회하며 존재하는 topic인지 검증한다. 이거 필요 업센 시발
-    std::map<std::string, Channel>::iterator it = channels.begin();
-    for (; it != channels.end(); it++) {
-        if (topicName == it->second.getTopic()) {
-            // 이 에러코드 맞는건지 몰라여
-            Communicate::generateWarnMessage(user, "403", getCmd(), getTrailing(), "is Duplicate Topic name");
-            return false;
-        }
-    }
-    return true;
-}
-
 Topic::~Topic() {
 }
 
 // 채널 내의 토픽을 보여주는 기능 -> 있으면 보여주고, 없으면 없다는 메세지 보여줘야됨
 // TOPIC #saewoo 입력한 경우, topic이 있는지 검증합니다.
-void Topic::showChannelTopic() {
-    std::string channelName = getParameters().at(0);
-    std::map<std::string, Channel>::iterator it = channels.find(channelName);
+void Topic::showChannelTopic(Channel channel) {
+
     // 만일 토픽이 세팅되어있지 않다면
-    if (it->second.getTopic().empty()) {
-        Communicate::sendMessage(user, "331", getCmd(), "No topic is set");
-        // std::string result = ":" + user.getServerName() + " 331 " + user.getNickName() + " " + getParameters().at(0) + " :No topic is set";
-        // Communicate::sendToClient(user.getFd(), result); 
+    if (channel.getTopic().empty()) {
+        std::string result = ":" + user.getHostName() + " 331 " + user.getNickName() + " " + channel.getName() + " :No topic is set";
+        Communicate::sendToClient(user.getFd(), result); 
         return ;
     }
     // 해당 채널의 topic을 보여줍니다.
-    std::string result = ":" + user.getNickName() + "!" + user.getUserName() + "@" + user.getServerName() + " " + getCmd() + " " + getParameters().at(0) + " :" + it->second.getTopic();
+    std::string result = ":" + user.getHostName() + " 332 " + user.getNickName() + " " + channel.getName() + " :" + channel.getTopic();
     Communicate::sendToClient(user.getFd(), result);
 }
 
-void Topic::updateTopic(std::string topicName) {
+/**
+ * 변경 시점 updateTopic 하는 순간 channel의 topic은 무조건 trailing임.
+ * setTopic을 한 후에 들어온 user들은 어떻게 하지?
+*/
+void Topic::updateTopic(Channel channel) {
+    channel.setTopic(getTrailing());
+    std::map<std::string, UserInfo>::iterator it = channel.users.begin();
 
-    std::map<std::string, Channel>::iterator it = channels.find(getParameters().at(0));
-    it->second.setTopic(topicName);
-    std::string result = ":" + user.getNickName() + "!" + user.getUserName() + "@" + user.getServerName() + " " + getCmd() + " " + getParameters().at(0) + " :" + topicName;
-    Communicate::sendToClient(user.getFd(), result);
+    for (; it != channel.users.end(); it++) {
+        UserInfo userInChannel = it->second;
+        std::string msg = ":" + userInChannel.getNickName() + "!" + userInChannel.getUserName() + "@" + user.getHostName() + " TOPIC " + channel.getName() + " :" + getTrailing();
+        Communicate::sendToClient(userInChannel.getFd(), msg);
+    }
+}
+
+// 채널 내에 sender가 존재하는지 검증
+bool Topic::isUserInChannel() {
+    std::map<std::string, bool>::iterator it = user.channels.find(getParameters().at(0));
+
+    if (it == user.channels.end()) {
+        std::string msg = ":" + user.getHostName() + " 442 " + user.getNickName() + " " + getParameters().at(0) + " :You're not on that channel";
+        Communicate::sendToClient(user.getFd(), msg);
+        return false;
+    }
+    return true;
+}
+
+bool Topic::isDuplicateTopic(Channel channel) {
+    if (channel.getTopic() == getTrailing()) {
+        return true;
+    }
+    return false;
+}
+
+
+bool Topic::isOperator(Channel channel) {
+    std::string username = user.getNickName();
+
+    if (channel.operators.find(username) == channel.operators.end()) {
+        return false;
+    }
+
+    return true;
+}
+
+bool Topic::isTopicModeOn(Channel channel) {
+
+    if (!channel.getTopicMode() || !isOperator(channel)) {
+        std::string msg = ":" + user.getHostName() + " 482 " + user.getNickName() + " " + channel.getName() + ": You do not have access to change the topic on this channel";
+        return false;
+    }
+    return true;
 }
 
 void Topic::execute() {
+    std::map<std::string, Channel>::iterator it = channels.find(getParameters().at(0));
+    Channel &channel = it->second;
+
+    if (!user.getActive()) {
+        return;
+    }
+
     // 실제로 존재하는 채널인지 검수하는 기능
     if (!isValidChannel()) {
-        Communicate::generateWarnMessage(user, "403", getCmd(), getParameters().at(0), "No such channel");
         return;
     }
     // trailing이 존재하지 않는다면, 조회 기능으로 판별
     if (!isExistTopic()) {
         // 조회 기능
-        std::cout << "trailing이 존재하지 않으므로, 조회를 시작합니다." << std::endl;
-        showChannelTopic();
+        showChannelTopic(channel);
         return ;
     }
+    if (!isUserInChannel() || !isTopicModeOn(channel)) {
+        return ;
+    }
+
     // trailing이 존재한다면, 해당 Trailing으로 channel의 topic을 업데이트합니다.
-    updateTopic(getTrailing());
+    if (!isDuplicateTopic(channel)) {
+        updateTopic(channel);
+    }
 }
