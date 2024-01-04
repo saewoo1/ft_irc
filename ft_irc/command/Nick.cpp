@@ -8,6 +8,7 @@ bool Nick::checkForm()
         return false;
     }
     if (isDuplicateNickName()) {
+        close(user.getFd());
         return false;
     }
     return true;
