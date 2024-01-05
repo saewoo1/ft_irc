@@ -52,8 +52,14 @@ void Part::partUser(std::string &channelName)
         Communicate::sendToClient(this->user.getFd(), msg);
     }
     partChannel = &(this->channelList.find(channelName))->second;
+    partChannel->setUserCount(-1);
     for (std::map<std::string, UserInfo>::iterator it = partChannel->users.begin(); it != partChannel->users.end(); it++) {
         Communicate::sendToClient(it->second.getFd(), msg);
+    }
+    
+    if (partChannel->getUserCount() == 0) {
+        std::map<std::string, Channel>::iterator it = this->channelList.find(partChannel->getName());
+        channelList.erase(it);
     }
 }
 
@@ -77,6 +83,7 @@ void Part::earseUserInUserInfo(std::string &channelName)
         if (iterChannels->second.getName() == channelName) {
             Channel *part = &iterChannels->second;
             for (std::map<std::string, UserInfo>::iterator it = part->users.begin(); it != part->users.end(); it++) {
+                std::cout << it->first << ", " << this->user.getNickName() << std::endl;
                 if (it->first == this->user.getNickName()) {
                     std::string name = it->first;
                     part->users.erase(it);

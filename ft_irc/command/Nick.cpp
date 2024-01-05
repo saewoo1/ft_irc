@@ -63,8 +63,11 @@ void Nick::execute()
             if (isInChannel()) {
                 updateChannelUser(getParameters().at(0));
             }
+            std::string oldNick = user.getNickName();
             user.setNick(true);
             user.setNickName(getParameters().at(0));
+            std::string msg = ":" + oldNick + "!" + user.getUserName() + "@" + user.getServerName() + " NICK " + user.getNickName();
+            Communicate::sendToClient(user.getFd(), msg);
             return ;
         }
         return ;
